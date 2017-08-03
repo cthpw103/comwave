@@ -49,25 +49,6 @@
 <meta name="keywords" content="Comwave, home phone, internet, long distance, low cost, cheap, business lines, phone and internet bundle, voip, voice over IP, canada" />
 <link rel="canonical" href="http://www.comwave.net/" />
 <!-- /all in one seo pack -->
-<meta property="fb:app_id" content="147327625435176"/><script type="text/javascript">
-var _inside = _inside || [];
-_inside.push({
-'action':'getTracker',
-'account':'IN-1000032'});
-// Track the page view
-_inside.push({
-'action':'trackView',
-'type':'article',
-'name':'Comwave  Comwave Home Phone &amp; Low Long Distance Rates | Voip Phone in  Canada | Content Page',
-'id' : '041251888254848513',
-'orderId': '041251888254848513'
-});
-(function() {
-  var inside = document.createElement('script'); inside.type = 'text/javascript'; inside.async = true;
-  inside.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'inside-graph.com/ig.js?hn=' + encodeURIComponent(document.location.hostname) + '&_=' + Math.random();
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(inside, s);
-})();
-</script>
 			<!--[if IE]> <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script> <![endif]-->
 	<!--[if IE]><link rel="stylesheet" type="text/css" href="http://www.comwave.net/wp-content/themes/comwave/css/ie.css" /><![endif]-->
 	<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="http://www.comwave.net/wp-content/themes/comwave/css/ie7.css" /><![endif]-->
