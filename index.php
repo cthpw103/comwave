@@ -534,14 +534,7 @@ float: left;">
 	</div><!--end inside-->	
 </section>
 
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+
 <footer>
   <div class="inside footer_bg">
   	
@@ -629,11 +622,11 @@ float: left;">
 <script type="text/javascript" src="http://www.comwave.net/wp-content/themes/comwave/js/ephone-long-distance-widget.js"></script> 
 <script type="text/javascript" src="http://www.comwave.net/wp-content/themes/comwave/js/local-calling-guide.js"></script> 
 <script type="text/javascript" src="http://www.comwave.net/wp-content/themes/comwave/js/init.js"></script> 
-<script type="text/javascript" src="/_common/scripts/hpflashvars.js"></script> 
-<script type="text/javascript" src="/_common/scripts/ldtdyntfn.js"></script> 
-<script type="text/javascript" src="/_common/scripts/dynreplace.js"></script>
+<script type="text/javascript" src="http://www.comwave.net//_common/scripts/hpflashvars.js"></script> 
+<script type="text/javascript" src="http://www.comwave.net//_common/scripts/ldtdyntfn.js"></script> 
+<script type="text/javascript" src="http://www.comwave.net//_common/scripts/dynreplace.js"></script>
 
 <noscript>
-niger actuvar gay script
+niger activat jsscript
 </noscript>
  </body></html>
