@@ -1,0 +1,125 @@
+var ephone_long_distance_widget_cycle = true;
+var ephone_long_distance_widget_cycle_timer = null;
+var ephone_long_distance_widget_cycle_timeout = 5000;
+
+if (SITE_ROOT == undefined)
+	var SITE_ROOT = '/';
+
+function loadePhoneRateForCountry (country)
+{
+
+	if ($.trim(country).length==0)
+	{
+		$("#ephone_long_distance_country").html("");
+		$("#ephone_long_distance_rates").html ("");
+		return;
+	}
+	
+	// only show loading if user selects
+	if (!ephone_long_distance_widget_cycle)
+	{
+		$("#ephone_long_distance_country").html ("Loading rates for " + country + "...");
+		$("#ephone_long_distance_rates").html ("");
+	}
+	
+	if (typeof country == 'undefined') return;
+	
+	var params = 'country=' + encodeURI (country);
+	
+	$.ajax({
+			type: "GET",
+			url: SITE_ROOT + "widgets/english-ephone-rates-widget.php",
+			data: params,
+			success: function (_data) {
+				xmlDoc = $.parseXML( _data ),
+				$xml = $( xmlDoc ),
+				$areas = $xml.find("area");
+				
+				var html = "";
+				
+				$($areas).each(function()
+			    {
+					var areaname=$(this).find("name").text();
+					var five=$(this).find("five").text() + " <span class='ephoneminlabel'>mins</span>";
+					var ten=$(this).find("ten").text() + " <span class='ephoneminlabel'>mins</span>";
+					var thirty=$(this).find("thirty").text() + " <span class='ephoneminlabel'>mins</span>";
+					if (five[0]=='0') { five='<span style="color:#0079C2;">Free!</span>'}
+					if (ten[0]=='0') { ten='<span style="color:#0079C2;">Free!</span>'}
+					if (thirty[0]=='0') { thirty='<span style="color:#0079C2;">Free!</span>'}
+					html += '<div class="eprate">';
+					html += '<span class="epratetype">' + areaname + '</span>';
+					html += '<span class="epratefive">' + five + '</span>';
+					html += '<span class="eprateten">' + ten + '</span>';
+					html += '<span class="epratethirty">' + thirty + '</span>';
+					html += '</div>';
+				});
+
+				
+				/*
+				$(_data).find("area").each(function()
+			    {
+					var areaname=$(this).find("name").text();
+					var five=$(this).find("five").text();
+					var ten=$(this).find("ten").text();
+					var thirty=$(this).find("thirty").text();
+					html += '<div class="eprate">';
+					html += '<span class="epratetype">' + areaname + '</span>';
+					html += '<span class="epratefive">' + five + '</span>';
+					html += '<span class="eprateten">' + five + '</span>';
+					html += '<span class="epratethirty">' + five + '</span>';
+					html += '</div>';
+			    });
+				*/
+				
+				/*
+				var rates = _data.split("&");
+				var html = "";
+				
+				for (var i in rates)
+				{
+					var pair = rates [i].split ("=");
+					html += '<div class="rate">';					
+					html += '<span class="rateType">' + pair [0] + '</span>';
+					html += '<span class="rateNumber">' + pair [1] + '</span>';
+					html += '</div>';
+				}
+				*/
+				
+				$("#ephone_long_distance_rates").html (html);
+				
+				if (ephone_long_distance_widget_cycle)
+				{
+					ephone_long_distance_widget_cycle_timer = setTimeout (loadRandomePhoneRate, ephone_long_distance_widget_cycle_timeout);
+				}
+			}
+		});
+}
+
+function loadRandomePhoneRate ()
+{
+	//var countries = new Array ();
+	
+	//$("#ephone_long_distance_country_select option").each (function () {
+	//	if ($(this).val () != "")
+	//	{
+	//		countries.push ($(this).val ());
+	//	}
+	//});
+
+	//loadePhoneRateForCountry (countries [Math.floor (Math.random () * countries.length)]);
+}
+
+$(document).ready (function () {
+	
+	// bind the select action
+	$("#ephone_long_distance_country_select").change (function () {
+		// stop the cycle first
+		ephone_long_distance_widget_cycle = false;
+		clearInterval (ephone_long_distance_widget_cycle_timer);
+		$('#ephoneratecountry').text($(this).val());
+		loadePhoneRateForCountry ($(this).val ());
+	});
+	
+	// start cycle
+	loadRandomePhoneRate ();
+});

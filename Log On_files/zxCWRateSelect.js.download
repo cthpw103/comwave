@@ -1,0 +1,42 @@
+/*
+* @author: Azim Zakhidov a.k.a. 3oxa
+* @email: azakhidov@gmail.com
+* @email: azim.zakhidov@cyberplex.com
+* @icq:   62472200
+*/
+window.addEvent('domready',function(){
+    var zxCWRateSelectOpt = { };
+    var CWRateSelect = new zxCWRateSelect(zxCWRateSelectOpt);
+});
+
+var zxCWRateSelect = new Class({
+
+    options : {
+        sel:'saverRateSelect',
+        ul:'rateList',
+        ratePostfix:'Rate'
+    },
+
+    setOptions:function(options){
+        this.options = Object.extend(this.options, options || {} );
+    },
+
+    initialize:function(options){
+        this.setOptions(options);
+        if ( $(this.options.sel) && $(this.options.ul) ){
+            $(this.options.sel).addEvent('change',function(){
+                this.ulScrollTo($(this.options.sel).value);
+            }.bind(this));
+        }
+    },
+
+    ulScrollTo:function(value){
+        var li = value+this.options.ratePostfix;
+        if (!$(this.options.ul) || !$(li)) return false;
+
+        var parent = $(this.options.ul).getPosition();
+		var target = $(li).getPosition();
+
+        $(this.options.ul).scrollTo( target.x - parent.x, target.y - parent.y );
+    }
+});

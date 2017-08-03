@@ -1,0 +1,16 @@
+/* global-bridge.css: This CSS file connects all globally used style rules together. This is used to not have several individual stylesheets attached to an HTML file. */
+
+/*
+CSS Copyright (c) 2008, Brexson Media Group/EN-FORCE Networks. All rights reserved.
+Author: Nathaniel Bagnell
+Date: Tuesday, March 4th 2008
+version: 1.0
+*/
+
+/* This file resets all rules on elements to ensure all browsers start with the same style rules. */
+@import url("reset.css");
+
+/* This file has all the main elements that make up all the pages */
+@import url("core.css");
+
+@import url("comwave.css");

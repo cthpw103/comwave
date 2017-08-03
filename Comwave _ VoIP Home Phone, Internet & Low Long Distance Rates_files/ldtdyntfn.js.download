@@ -1,0 +1,230 @@
+function getSignupIDFromCookieName(inputCookiename)
+{
+	var result='';
+	var cookiename = inputCookiename + '=';
+	var allCookies = document.cookie;
+	var cPos = allCookies.indexOf(cookiename);
+	if(cPos != -1)
+	{
+		var cdstart = cPos + cookiename.length;
+		var cdend = allCookies.indexOf(";", cdstart);
+		if(cdend == -1) cdend = allCookies.length;
+		var cookieContent = allCookies.substring(cdstart,cdend);
+		cookieContent = unescape(cookieContent);
+		var cdatestart = cookieContent.indexOf("&&&", 0);
+		var cdateend = cookieContent.length;
+		result = cookieContent.substring(0,cdatestart);
+		var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+	}
+	return result;
+}
+
+function getCanLDTFNandDealerCode()
+{
+	var json="";
+	var cComwaveLDCANSignupID="";
+	
+	cComwaveLDCANSignupID = getSignupIDFromCookieName('comwaveoveridesignupid');
+	if (cComwaveLDCANSignupID.length==0)
+	{
+		cComwaveLDCANSignupID = getSignupIDFromCookieName('comwaveldcansignupid');
+	}
+	
+	/*
+	var allCookies = document.cookie;
+	var cPos = allCookies.indexOf("comwaveldcansignupid=");
+	if(cPos != -1)
+	{
+		var cdstart = cPos + 21;
+		var cdend = allCookies.indexOf(";", cdstart);
+		if(cdend == -1) cdend = allCookies.length;
+		var cookieContent = allCookies.substring(cdstart,cdend);
+		cookieContent = unescape(cookieContent);
+		var cdatestart = cookieContent.indexOf("&&&", 0);
+		var cdateend = cookieContent.length;
+		cComwaveLDCANSignupID = cookieContent.substring(0,cdatestart);
+		var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+	}
+	*/
+	var prms=cComwaveLDCANSignupID.split("-");
+	var dealerId=null;
+	if (prms[0])
+	{
+		dealerId=prms[0];
+	}
+	var agentId=null;
+	if (prms[1])
+	{
+		agentId=prms[1];
+	}
+	
+	if (dealerId===null || dealerId.length===0)
+	{
+		json='{tn:"1-866-719-2565"}';
+		return json;
+	}
+	switch (dealerId)
+	{
+	case "1131":
+	  json='{tn:"1-866-719-2565"}';
+	  break;
+	case "1167":
+	  json='{tn:"1-866-517-9143"}';
+	  break;
+	case "1170":
+	  json='{tn:"1-866-217-3570"}';
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") json='{tn:"1-866-217-3570"}';
+		else if (agentId=="2") json='{tn:"1-866-779-9943"}';
+		else if (agentId=="3") json='{tn:"1-866-774-0129"}';
+		else if (agentId=="4") json='{tn:"1-866-774-0130"}';
+		else if (agentId=="5") json='{tn:"1-866-769-8669"}';
+		else if (agentId=="6") json='{tn:"1-866-769-8710"}';
+		else if (agentId=="7") json='{tn:"1-866-719-2558"}';
+		else if (agentId=="8") json='{tn:"1-866-657-6732"}';
+		else if (agentId=="37") json='{tn:"1-866-762-9469"}';
+		else if (agentId=="38") json='{tn:"1-866-769-6823"}';
+		else if (agentId=="39") json='{tn:"1-866-206-7473"}';
+		else if (agentId=="40") json='{tn:"1-866-223-1071"}';
+		else if (agentId=="41") json='{tn:"1-866-601-7915"}';
+		else if (agentId=="42") json='{tn:"1-866-549-4804"}';
+	  }
+	  break;
+	//case "1177":
+	//  json='{tn:"1-866-518-1049"}'; // retired
+	//  break;
+	case "1179":
+	  json='{tn:"1-866-216-9373"}';
+	  break;
+	case "1181":
+	  json='{tn:"1-866-463-0441"}';
+	  if (agentId=="3") json='{tn:"1-866-463-0441"}';
+	  break;
+	case "1193":
+	  json='{tn:"1-866-714-8232"}';
+	  break;  
+	//case "1195":
+	//  json='{tn:"1-866-210-9280"}'; // retired
+	//  break;
+	default:
+	  json='{tn:"1-866-719-2565"}';
+	}
+	
+	if (typeof dealerId === 'undefined' || dealerId===null || dealerId.length===0)
+	{
+		json='{tn:"1-866-719-2565"}';
+		return json;
+	}
+	
+	if (typeof agentId === 'undefined' || agentId===null || agentId.length===0)
+	{
+		agentId=null;
+	}
+	
+	if (dealerId!=null && dealerId.length>0)
+	{
+		json = json.slice(0, -1);
+		json+=',dealer:"'+dealerId+'",';
+	}
+	if (agentId!=null)
+	{
+		json = json.slice(0, -1);
+		json+=',agent:"'+agentId+'",';
+	}
+	
+	json = json.slice(0, -1);
+	json+="}";
+	
+	return json;
+}
+
+function getUSALDTFNandDealerCode()
+{
+	var json="";
+	var cComwaveLDUSASignupID="";
+	
+	cComwaveLDUSASignupID = getSignupIDFromCookieName('comwaveoveridesignupid');
+	if (cComwaveLDUSASignupID.length==0)
+	{
+		cComwaveLDUSASignupID = getSignupIDFromCookieName('comwaveldusasignupid');
+	}
+	
+	/*
+	var allCookies = document.cookie;
+	var cPos = allCookies.indexOf("comwaveldusasignupid=");
+	if(cPos != -1)
+	{
+		var cdstart = cPos + 21;
+		var cdend = allCookies.indexOf(";", cdstart);
+		if(cdend == -1) cdend = allCookies.length;
+		var cookieContent = allCookies.substring(cdstart,cdend);
+		cookieContent = unescape(cookieContent);
+		var cdatestart = cookieContent.indexOf("&&&", 0);
+		var cdateend = cookieContent.length;
+		cComwaveLDUSASignupID = cookieContent.substring(0,cdatestart);
+		var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+	}
+	*/
+	
+	var prms=cComwaveLDUSASignupID.split("-");
+	var dealerId=null;
+	if (prms[0])
+	{
+		dealerId=prms[0];
+	}
+	var agentId=null;
+	if (prms[1])
+	{
+		agentId=prms[1];
+	}
+	
+	if (dealerId===null || dealerId.length===0)
+	{
+		json='{tn:"1-866-762-2413"}';
+		return json;
+	}
+	
+	switch (dealerId)
+	{
+	case "1131":
+	  json='{tn:"1-866-762-2413"}';
+	  break;
+	case "1170":
+	  json='{tn:"1-866-657-6732"}';
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="8") json='{tn:"1-866-657-6732"}';
+	  }
+	  break;
+	default:
+	  json='{tn:"1-866-762-2413"}';
+	}
+	
+	if (typeof dealerId === 'undefined' || dealerId===null || dealerId.length===0)
+	{
+		json='{tn:"1-866-762-2413"}';
+		return json;
+	}
+	
+	if (typeof agentId === 'undefined' || agentId===null || agentId.length===0)
+	{
+		agentId=null;
+	}
+	
+	if (dealerId!=null && dealerId.length>0)
+	{
+		json = json.slice(0, -1);
+		json+=',dealer:"'+dealerId+'",';
+	}
+	if (agentId!=null)
+	{
+		json = json.slice(0, -1);
+		json+=',agent:"'+agentId+'",';
+	}
+	
+	json = json.slice(0, -1);
+	json+="}";
+	
+	return json;
+}

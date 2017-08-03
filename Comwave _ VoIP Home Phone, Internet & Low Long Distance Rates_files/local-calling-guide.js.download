@@ -1,0 +1,129 @@
+function IsNumeric(sText)
+
+{
+   var ValidChars = "0123456789";
+   var IsNumber=true;
+   var Char;
+
+ 
+   for (i = 0; i < sText.length && IsNumber == true; i++) 
+      { 
+      Char = sText.charAt(i); 
+      if (ValidChars.indexOf(Char) == -1) 
+         {
+         IsNumber = false;
+         }
+      }
+   return IsNumber;
+   
+}
+
+
+function checkifLocalOrLongD()
+{
+
+	if (jQuery("input.error").length>0) return;
+
+	var npa1 = jQuery("#npa1").val();
+	var npa2 = jQuery("#npa2").val();
+	var nxx1 = jQuery("#nxx1").val();
+	var nxx2 = jQuery("#nxx2").val();
+	
+
+	jQuery("#submit").hide();
+	jQuery(".spinner").show();
+	jQuery.ajax({
+                      type: "GET",
+                      url: SITE_ROOT + "widgets/local-calling-guide.php?npa1=" + npa1 + "&nxx1=" + nxx1 + "&npa2=" + npa2 + "&nxx2=" + nxx2,
+                      dataType: "text",
+                      success: function(text)
+                        {
+					jQuery("#submit").show(); jQuery(".spinner").hide();
+
+                        	text = text.toLowerCase();
+
+					var resultMsg="";
+					var bError=true;
+
+					if (text==="local")
+					{
+						resultMsg="This call would be charged as a <em>local call</em>";
+						bError=false;
+					}
+					else if (text==="longdistance")
+					{
+						resultMsg="This call would be charged as a <em>long distance call</em>";
+						bError=false;
+					}
+					else if (text==="noresult")
+					{
+						resultMsg="Unfortunatly this service could not determine if the call is local or long distance. Please make sure you have entered valid and real phone numbers and try again.";
+					}
+					else if (text==="inputerror")
+					{
+						resultMsg="Please make sure you have entered valid phone numbers and try again.";
+					}
+					else // error with the service itself
+					{
+						resultMsg="Unfortunatly this service is not available at this moment. Please try again later.";
+					}
+
+					if(bError)
+					{
+						resultMsg="An error occured: " + resultMsg;
+						jQuery("#resultmsg").addClass("error");
+					}
+					else
+					{
+						jQuery("#resultmsg").removeClass("error");
+					}
+
+					jQuery("#resultmsg").html(resultMsg);
+
+
+                        }
+  			});
+
+}
+
+
+jQuery(document).ready(function(){
+    jQuery.validator.addMethod("phoneparts", function(thevalue, element) {
+	bValid = (thevalue.length==(parseInt(element.getAttribute("maxlength")) ) && (IsNumeric(thevalue)) );
+
+	if (!bValid)
+	{
+		jQuery(element).addClass("error");
+		jQuery(element).parent().find("span.customerror").html("Please enter a valid phone number");
+	}
+	else
+	{
+		jQuery(element).removeClass("error");
+		if (jQuery(element).parent().find("input.error").length==0)
+		{
+			jQuery(element).parent().find("span.customerror").html("");
+		}
+	}	
+
+	return bValid;
+
+
+}, "");
+
+jQuery("#input-form").validate({
+  rules: {
+    npa1:{phoneparts:true},
+	nxx1:{phoneparts:true},
+	xxxx1:{phoneparts:true},
+	npa2:{phoneparts: true},
+	nxx2:{phoneparts:true},
+	xxxx2:{phoneparts: true}
+  },
+
+	submitHandler: function(form) {
+		checkifLocalOrLongD();
+	}  
+  
+});
+
+  });

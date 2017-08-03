@@ -1,0 +1,220 @@
+window.addEvent('domready',function(){
+    signUpForm = new signUp();
+});
+var signUp = new Class({
+    form:null,
+    btn:null,
+
+    options:{
+        formClass:'.sign-me-up',
+        nextBtn:'.form-button',
+        reqSpan:'.validation-error',
+        inpType:{
+        'email':'email',
+        'postalCode':'postalcode',
+        'postalCode1':'postalcode',
+        'postalCode2':'postalcode',
+        'existingPhoneNum':'sPhone',
+        'creditCardNum':'ccard',
+        'expDateYear':'expDate',
+        'I-agree':'checkbox',
+        'I-understand-911':'checkbox'
+        },
+        helpBtn:'.helpbox-icon',
+        helpDiv:'.popup-box',
+        helpClose:'.popup-box-close',
+        wireless:{
+            tog:'provider-dropdown',
+            cls:'wireless-provider',
+            elm:'wireless-account-number-wrapper'
+        },
+        difShipAdr:{
+            tog:'different-shipping-address',
+            elm:'set-2'
+        },
+        keepNumber:{
+            name:'input[name=phoneNumberChoice]',
+            'keep-exisitng-number-option':['#keep-number-wrapper','#get-new-number-wrapper'],
+            'get-new-number-option':['#get-new-number-wrapper','#keep-number-wrapper']
+        },
+        showLoader:'showLoader',
+        loaderDiv:'LoaderDiv'
+    },
+    initialize:function(){ //initialize is by default always ran first.
+        this.form = $$(this.options.formClass)[0];
+        this.bindHelp();
+
+        if (!this.form) return null;
+        $$(this.options.nextBtn).each(function(btn){
+            btn.addEvent('click',function(ev){
+                if (!this.validateForm()){
+                    var ev = new Event(ev).stop();
+                }else if (btn.hasClass(this.options.showLoader)) {
+                    this.showLoaderScreen();
+                }
+            }.bind(this));
+        }.bind(this));
+        this.bindDifShipAdr();
+        this.bindKeepNumber();
+       // this.bindWirelessAccount();
+    },
+
+    validateForm:function(){
+        var valid=true;
+        var msgs = $$(this.options.reqSpan);
+        $each(msgs,function(msg){
+            var inp = msg.getPrevious();
+            if (inp&&['input','select'].contains(inp.getTag())&&inp.getSize().size.x>0){
+                var type = (inp.getTag()=='select')?'select':'text';
+                var type = (this.options.inpType[inp.name] || type);
+                if (!this.validateValue(inp.value,type,inp)){
+                    msg.setStyle('display','block');
+                    valid=false;
+                }else{
+                    msg.setStyle('display','none');
+                }
+            }
+        },this);
+
+        if ( $$('input[name=howHear]').length>0 ){
+            var elms = $$('input[name=howHear]');
+            var checked=false;
+
+            for(var i=0;(i<elms.length && !checked);i++){ checked = checked||elms[i].checked; }
+            if (checked){
+                if ( $('radio-error-msg') ) $('radio-error-msg').setStyle('display','none');
+                valid = valid && true;
+            }else{
+                if ( $('radio-error-msg') ) $('radio-error-msg').setStyle('display','block');
+                valid = false;
+            }
+        }
+
+        if ( $('Add-bundle') && $$('input[name=Bundle-Options]').length>0 && $('Add-bundle').checked){
+            var elms = $$('input[name=Bundle-Options]');
+            var checked=false;
+
+            for(var i=0;(i<elms.length && !checked);i++){ checked = checked||elms[i].checked; }
+            if (checked){
+                if ( $('bundle-error-msg') ) $('bundle-error-msg').setStyle('display','none');
+                valid = valid && true;
+            }else{
+                if ( $('bundle-error-msg') ) $('bundle-error-msg').setStyle('display','block');
+                valid = false;
+            }
+        }
+
+        return valid;
+    },
+
+    validateValue:function(value,type,inp){
+        value=value.trim();
+        switch(type){
+            case 'checkbox': return inp.checked; break;
+            case 'email': var reg=/[\w\.-]+@[\w\.-]+\.\w+$/i; break;
+            case 'select': var nreg = /^(VV)$/i; break;
+            case 'postalcode': var reg = /[a-z][0-9][a-z][\s]?[0-9][a-z][0-9]/i; break;
+            case 'ccard': var reg = /[0-9\- ]{15,16}/i; break;
+
+            //case 'sPhone': if (inp.getPrevious() && inp.getNext()){ value = inp.getPrevious().value+' '+value+inp.getNext().value; }
+            //var reg = /[0-9]{3}[ ][0-9\-\. ]{7,10}/i; break;
+            case 'sPhone': if (inp.getPrevious() && inp.getNext()){ value = inp.getPrevious().getPrevious().value + inp.getPrevious().value+value; }
+            var reg = /[0-9]{10}/i; break;
+
+            case 'expDate': if ($('expiration-month')){ value = $('expiration-month').value+' '+value; }
+            var nreg = /(VV)+/i; break; break;
+            default: var reg=/.+$/i; break;
+        }
+        if (reg) return value.test(reg);
+        if (nreg) return !value.test(nreg);
+        return false;
+    },
+
+    bindHelp:function(){
+        var btns = $$(this.options.helpBtn);
+        var divs = $$(this.options.helpDiv);
+        $each(btns,function(btn,ind){
+            var div = (divs[ind]||null);
+            if (div){
+                btn.setStyle('cursor','pointer');
+                btn.addEvent('click',function(ev){
+                    new Event(ev).stop();
+                    div.setStyle('display','block');
+                    var wsize = window.getSize().size;
+                    var wscroll = window.getSize().scroll;
+                    var dsize = div.getSize().size;
+                    var left = (wsize.x-dsize.x)/2+wscroll.x;
+
+                    var maxTop = (window.ie)?235:255;
+                    var top = Math.max(maxTop, (wsize.y-dsize.y)/2+wscroll.y);
+                    div.setStyles({'left':left+'px','top':top+'px'});
+                    $$('select').setStyle('display','none');
+                });
+                $ES(this.options.helpClose,div).each(function(cls){
+                    cls.addEvent('click',function(ev){
+                        var ev=new Event(ev).stop(); div.setStyle('display','none');
+                        $$('select').setStyle('display','');
+                    });
+                });
+            }
+        },this);
+    },
+
+    bindDifShipAdr:function(){
+        if ($(this.options.difShipAdr.tog)&&$(this.options.difShipAdr.elm)){
+            $(this.options.difShipAdr.tog).addEvent('click',this.togleDifShipAdr.pass([this.options.difShipAdr.tog,this.options.difShipAdr.elm],this));
+            this.togleDifShipAdr(this.options.difShipAdr.tog,this.options.difShipAdr.elm);
+        }
+    },
+
+    togleDifShipAdr:function(tog, elm){
+        if ($(tog).getProperty('checked')){
+            $(elm).setStyle('display','block');
+        }else{
+            $(elm).setStyle('display','none');
+        }
+    },
+
+    bindKeepNumber:function(){
+        var inps = $$(this.options.keepNumber.name);
+        if (inps && inps.length>1){
+            $each(inps,function(inp){
+                inp.addEvent('click',this.togleKeepNumber.pass([inp],this));
+                if (inp.getProperty('checked')){
+                    inp.fireEvent('click');
+                }
+            },this);
+        }
+    },
+    togleKeepNumber:function(inp){
+        var set = this.options.keepNumber[inp.id];
+        $$(set[0]).setStyle('display','block');
+        $$(set[1]).setStyle('display','none');
+    },
+
+    showLoaderScreen:function(){
+        if ( $(this.options.loaderDiv) ) $(this.options.loaderDiv).remove();
+        var d = new Element('div').setProperty('id',this.options.loaderDiv).injectInside( document.body );
+        var dd = new Element('div').setHTML('Processing').injectInside(d);
+        if (window.ie6){
+            d.setStyle('height',document.body.getSize().size.y+'px');
+            window.scrollTo(0,0);
+        }
+    },
+
+    bindWirelessAccount:function(){
+        if ($(this.options.wireless.tog)&&$(this.options.wireless.elm)){
+            this.toggleWirelessAccount();
+            $(this.options.wireless.tog).addEvent('change',this.toggleWirelessAccount.bind(this));
+        }
+    },
+
+    toggleWirelessAccount:function(){
+        var tog = $(this.options.wireless.tog);
+        if ( tog.options[ tog.selectedIndex ].hasClass( this.options.wireless.cls ) ){
+            $(this.options.wireless.elm).setStyle('display','block');
+        }else{
+            $(this.options.wireless.elm).setStyle('display','none');
+        }
+    }
+});

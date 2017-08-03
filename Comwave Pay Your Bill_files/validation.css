@@ -1,0 +1,47 @@
+span.custom-required-txt
+{
+	display:none;	
+}
+
+li.validation-error, #servererrors ul li, #servererrors ul li span
+{
+    line-height: 18px;
+    font-size: 11px;
+    font-family: 'Muli', Verdana,Tahoma,Arial,Helvetica,Sans-Serif;
+    position:relative;
+    left:0px;
+    list-style:none;
+    list-style-position:outside;
+    padding:0 !important;
+    margin:0 !important;
+}
+
+#jserrors, #servererrors ul li, #servererrors ul li span
+{
+    color: red;
+    width:225px;
+    left:0px;
+}
+
+#servererrors ul
+{
+	margin:0px !important;
+	margin-left:0px !important;
+}
+
+.validation-error, .validation-error-custom
+{
+    color: red;
+}
+.validation-error-custom
+{
+	display:none;
+}
+.fieldError
+{
+	background-color: rgb(255, 221, 221);
+}
+input.fieldError
+{
+	background: url("../images/ui/background/contactInputRed.gif") no-repeat scroll 0 0 transparent    !important;
+}

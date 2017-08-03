@@ -1,0 +1,222 @@
+/* Pay Fields */
+#content #payfields p {font-size:0.875em; margin:0 0 10px 0;}
+#payfields label { width: 125px; float: left; cursor: default; color: #879196; margin-top: 3px;}
+#payfields input, .lineitems input {background: transparent url('../images/ui/background/contactInput.gif') no-repeat 0 0; height:27px; font-size:14px; width:140px; border:0; padding:0 8px;}
+
+/* AVS Fields */
+#content #avsaddrfields p {font-size:0.875em; margin:0 0 10px 0;}
+#avsaddrfields label { width: 125px; float: left; cursor: default; color: #879196; margin-top: 3px;}
+#avsaddrfields input {background: transparent url('../images/ui/background/contactInput.gif') no-repeat 0 0; height:27px; width:140px; border:0; padding:0 8px;}
+
+span.linepn, span.lineprice
+{
+	font-size: 20px;
+	font-weight: bold;
+	width:150px;
+	line-height: 25px;
+	font-family: Rokkitt,arial;
+}
+span.linepn
+{
+	float:left;
+	text-align:right;
+	width:300px;
+}
+span.lineprice span
+{
+	width:100px;
+	float:left;
+	text-align: right;
+}
+span.lineprice
+{
+	color:#0A6CA9;
+}
+span.lineitemsmiddlespan
+{
+	margin-right:20px;
+}
+.lineitems
+{
+	position:relative;
+	left: 28px;
+}
+div#ledgerline
+{
+	border-top:1px solid black;
+	padding-top:10px;
+	width:240px;
+	position:absolute;
+	left:200px;
+}
+img.payimg
+{
+	position:relative;
+	top:8px;
+	cursor: pointer;
+}
+span.paysep
+{
+	margin-left:5px;
+}
+#payradios
+{
+	padding-top:20px;
+	position:relative;
+	left:144px;
+}
+#papfields
+{
+	position:relative;
+	left:-90px;
+}
+.seccode input
+{
+	width:4.4em;
+}
+div.paymentfields
+{
+	position:absolute !important;
+}
+#creditchk
+{
+	top:140px;
+}
+#payfields
+{
+	height:110px;
+	position:relative;
+	left:145px;
+}
+#expDateMonth, #expDateYear
+{
+	font-size:10px;
+	width:8em !important;
+}
+#confirm
+{
+	position:relative;
+	font-size:12px;
+	padding-top:20px;
+	padding-bottom:20px;
+	left:79px;
+}
+#confirm span
+{
+}
+#confirmterms
+{
+	border-width:0px;
+	width:15px;
+}
+#credit-card
+{
+	display:none;
+}
+#payfields p
+{
+	font-size:14px;
+}
+#payfields label {
+    color: #879196;
+    cursor: default;
+    float: left;
+    margin-top: 3px;
+    width: 200px;
+    text-align:right;
+    padding-right:10px;
+}
+#continuecontainercheckout
+{
+	position:absolute;
+	left:320px;
+}
+
+.proceedbutton
+{
+	position:relative;
+	left:295px;
+}
+.backbutton
+{
+	position:absolute;
+}
+#paymenttitle
+{
+	text-align:center;
+	font-size:16px;
+	color:#0A6CA9;
+}
+
+form#payment div.contact_form, #prevpayblock
+{
+	display:none;
+}
+#prevpaypal, #prevcc, #backjs-button
+{
+	display:none;
+}
+#backjs-button
+{
+	left: -257px;
+    position: absolute;
+}
+body.showpaymentmethods form#payment div.contact_form
+{
+	display:block;
+}
+body.showpaypal #prevpayblock, body.showcc #prevpayblock
+{	
+	display:block;
+}
+body.showpaypal #prevpaypal, body.showcc #prevcc
+{	
+	display: block;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    text-align: center;
+    width: 100%;
+    font-family: Rokkitt,arial;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 25px;
+}
+#continuecontainercheckouttwo
+{
+	position:relative;
+	left:20px;
+}
+#paymentexisting
+{
+	padding-bottom:70px;
+}
+#checkmark
+{
+	-webkit-transition: all 0.75s ease-out 0s;
+	-moz-transition: all 0.75s ease-out 0s;
+	-o-transition: all 0.75s ease-out 0s;
+	-ms-transition: all 0.75s ease-out 0s;
+	transition: all 0.75s ease-out 0s;
+}
+#checkmark.start {
+    left: 150px;
+    position: absolute;
+    top: 42px;
+    -webkit-transform: rotate(0deg) scale(2.5);
+	-moz-transform: rotate(0deg) scale(2.5);
+	-o-transform: rotate(0deg) scale(2.5);
+	-ms-transform: rotate(0deg) scale(2.5);
+	transform: rotate(0deg) scale(2.5);
+	visibility:hidden;
+}
+#checkmark.end {
+    left: 550px;
+    position: absolute;
+    top: 42px;
+    -webkit-transform: rotate(360deg) scale(1.0);
+	-moz-transform: rotate(360deg) scale(1.0);
+	-o-transform: rotate(360deg) scale(1.0);
+	-ms-transform: rotate(360deg) scale(1.0);
+	transform: rotate(360deg) scale(1.0);
+	visibility:visible;
+}

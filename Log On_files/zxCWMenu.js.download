@@ -1,0 +1,205 @@
+/*
+* @author: Azim Zakhidov a.k.a. 3oxa
+* @email: azakhidov@gmail.com
+* @email: azim.zakhidov@cyberplex.com
+* @icq:   62472200
+*/
+window.addEvent('domready',function(){
+    var zxCWMenuOpt = { };
+    var CWMenu = new zxCWMenu(zxCWMenuOpt);
+});
+
+var zxCWMenu = new Class({
+
+    div:null,
+    control:null,
+    menu:null,
+    ul2:[],
+    height:0,
+    wheight:0,
+    accordion:null,
+    scroller:[],
+    type:'',
+
+    ready:false,
+
+    options : {
+        imgList:[
+        '_common/images/menuheader-business_01.gif','_common/images/menuheader-business_02.gif','_common/images/menuheader-business_03.gif',
+        '_common/images/menuheader-help_01.gif','_common/images/menuheader-help_02.gif','_common/images/menuheader-help_03.gif',
+        '_common/images/menuheader-residential_01.gif','_common/images/menuheader-residential_02.gif','_common/images/menuheader-residential_03.gif'
+        ],
+        defHeight:150,
+        defHeight1:245,
+        defHeight2:100,
+        div:'leftnav',
+        ul2:'.sublevel1',
+        ul3:'.sublevel2',
+        cookiename:'CWSubMenu',
+        cookiename2:'CWSubMenu2',
+        tabs:{
+            residential:{
+                link:'residentialLink',
+                img:'_common/images/menuheader-residential.gif',
+                id:'blue',
+                url:'_common/includes/menu-residential.html'
+            },
+            business:   {
+                link:'businessLink',
+                img:'_common/images/menuheader-business.gif',
+                id:'red',
+                url:'_common/includes/menu-business.html'
+            },
+            help:       {
+                link:'helpLink',
+                img:'_common/images/menuheader-help.gif',
+                id:'green',
+                url:'_common/includes/menu-help.html'
+            }
+        }
+    },
+
+    setOptions:function(options){
+        this.options = Object.extend(this.options, options || {} );
+    },
+
+    initialize:function(options){
+        this.setOptions(options);
+
+        this.div = $(this.options.div);
+        if (!this.div) return false;
+        this.control = this.div.getFirst();
+        this.menu = this.div.getLast();
+
+        if (!this.control||!this.menu) return false;
+        this.bindHeader();
+        this.bindMenu();
+
+        if (this.options.imgList && this.options.imgList.length>0){
+            //new Asset.images(this.options.imgList);
+        }
+    },
+
+    bindHeader:function(type){
+        var img = this.control.getFirst();
+        this.type = type;
+        $each(this.options.tabs,function(tab,key){
+            if ($(tab.link)){
+                $(tab.link).addEvent('click',function(ev){
+                    var ev = new Event(ev).stop();
+                    this.headClick([key]);
+                }.bind(this));
+            }else{
+                if (!this.type) this.type=key;
+            }
+        },this);
+        //this.control.getFirst().setProperty('useMap','#Map');
+    },
+
+    headUpdate:function(type){
+        this.setReady(false);
+        this.div = $(this.options.div);
+
+        this.control = this.div.getFirst();
+        this.menu = this.div.getLast();
+
+        if (!this.control||!this.menu) return false;
+
+        this.blockEmptyA();
+        this.bindHeader(type);
+        this.bindMenu();
+    },
+
+    headClick:function(type){
+        if (!this.options.tabs[type] || !this.ready) return false;
+        var tab = this.options.tabs[type];
+
+        new Ajax(tab.url,{
+            method:'post',
+            update: this.div,
+            autoCancel:true,
+            onComplete:this.headUpdate.pass([type],this)
+        }).request();
+    },
+
+    blockEmptyA:function(){
+        $ES('a[href=#]', this.div).each(function(a){a.addEvent('click',function(ev){new Event(ev).stop()})});
+    },
+
+    bindMenu:function(){
+        this.ul2 = $$(this.options.ul2);
+        if (this.ul2.length){ this.ul2.setStyles({'height':'0px','overflow':'hidden'}); }
+        this.ul3 = $$(this.options.ul3);
+        if (this.ul3.length){ this.ul3.setStyles({'height':'0px','overflow':'hidden'}); }
+
+        this.height = this.options.defHeight1;
+        if (this.control){
+            this.wheight = this.height-this.menu.getSize().size.y;
+            this.wheight2 = this.options.defHeight2;
+        }
+        this.menu.setStyle('height',this.options.defHeight1+'px');
+        this.setAccordion();
+        this.autoScroll();
+
+        this.setReady.delay(500,this, [true]);
+    },
+
+    setAccordion:function(){
+        if (this.ul2.length){
+            var toglers = this.ul2.getPrevious();
+            $each(toglers,function(span,i){
+                span.setProperty('rel',i);
+                span.addEvent('click',function(ev){ var ev=new Event(ev).stop(); });
+            });
+            var itmDisplay = Cookie.get(this.options.cookiename+this.type) || 0;
+            //this.ul2.setStyle('max-height',this.wheight+'px');
+
+            this.accordion = new Accordion(toglers, this.ul2,{
+                fixedHeight:this.wheight,
+                alwaysHide:true,
+                display:itmDisplay,
+                onActive:function(span){
+                    var id = span.getProperty('rel');
+                    Cookie.set(this.options.cookiename+this.type, id);
+                }.bind(this)
+            },this.menu);
+        }
+        if (this.ul3.length){
+            var toglers2 = this.ul3.getPrevious();
+            $each(toglers2,function(span,i){ span.setProperty('rel',i); });
+            var itmDisplay2 = Cookie.get(this.options.cookiename2+this.type) || 0;
+            //this.ul3.setStyle('max-height',this.wheight2+'px');
+
+            this.accordion2 = new Accordion(toglers2, this.ul3,{
+                fixedHeight:this.wheight2,
+                alwaysHide:true,
+                display:itmDisplay2,
+                onActive:function(span){
+                    var id = span.getProperty('rel');
+                    Cookie.set(this.options.cookiename2+this.type, id);
+                }.bind(this)
+            },this.menu);
+        }
+    },
+
+    autoScroll:function(){
+        if (this.ul2.length){
+            $each(this.ul2,function(ul,i){
+                this.scroller[i] = new Scroller(ul,{area: 45,velocity: .15,onChange:function(x,y){ this.element.scrollTo(0,y); }});
+                ul.addEvent('mouseover', this.scroller[i].start.bind(this.scroller[i]));
+                ul.addEvent('mouseout', this.scroller[i].stop.bind(this.scroller[i]));
+            },this);
+        }
+        if (this.ul3.length){
+            $each(this.ul3,function(ul,i){
+                this.scroller[i] = new Scroller(ul,{area: 45,velocity: .15,onChange:function(x,y){ this.element.scrollTo(0,y); }});
+                ul.addEvent('mouseover', this.scroller[i].start.bind(this.scroller[i]));
+                ul.addEvent('mouseout', this.scroller[i].stop.bind(this.scroller[i]));
+            },this);
+        }
+    },
+
+    setReady:function(state){
+        this.ready=(state)?true:false;
+    }
+});

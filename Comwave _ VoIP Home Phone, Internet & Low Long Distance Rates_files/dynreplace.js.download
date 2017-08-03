@@ -1,0 +1,1312 @@
+function getURLParameter(name) {
+    return decodeURI(
+        (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+    );
+}
+
+function isCanada()
+{
+	var wl=window.location.href;
+	var bIsCanada = (wl.toLowerCase().indexOf("/us/")==-1)
+	return (bIsCanada);
+}
+
+function updateLDTfnAndSignupLinks()
+{
+	var json;
+	var tn="1-866-719-2565";
+	var dealer="1131";
+	var agent="";
+	if (isCanada())
+	{
+		json = eval("(" + getCanLDTFNandDealerCode() + ")");
+	}
+	else
+	{
+		json = eval("(" + getUSALDTFNandDealerCode() + ")");
+	}
+	if (json.tn) tn=json.tn;
+	if (json.dealer) dealer=json.dealer;
+	if (json.agent) agent=json.agent;
+	//tn="1-888-888-8888"
+	//dealer="2000";
+	//agent="2";
+	urlparams="d="+dealer;
+	if (agent && agent.length > 0) urlparams+="&a="+agent;
+	jQuery("span.ldtfn").text(tn);
+	jQuery.each(jQuery('a[href*="/ldsignup/ld/custInfo?d=1131"]'), function() {
+			var hr = jQuery(this).attr("href");
+			hr=hr.replace("d=1131", urlparams);
+			jQuery(this).attr("href",hr);
+	});
+}
+
+function setDynHostedPbxTfn()
+{
+	if ((window.location.href.toLowerCase().indexOf("hosted") > -1) || (window.location.href.toLowerCase().indexOf("-sip-") > -1) )
+	{
+		var hostedTFN=null;
+		var bUsingDefault=false;
+		var d="null"
+		var cookieD = "null"
+		var allCookies = document.cookie;
+		var cPos = allCookies.indexOf("comwavehostedtfnn=");
+		if(cPos != -1)
+		{
+			var cdstart = cPos + 18;
+			var cdend = allCookies.indexOf(";", cdstart);
+			if(cdend == -1) cdend = allCookies.length;
+			var cookieContent = allCookies.substring(cdstart,cdend);
+			cookieContent = unescape(cookieContent);
+			var cdatestart = cookieContent.indexOf("&&&", 0);
+			var cdateend = cookieContent.length;
+			d = cookieContent.substring(0,cdatestart);
+			cookieD = d;
+			var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+		}
+		if (getURLParameter("d")!="null")
+		{
+			d = getURLParameter("d");
+		}
+		if (d!="null")
+		{
+			// set hidden input promo code if present
+			jQuery('input.pbxpromocode').val(d.substring(3));
+			switch (d)
+			{
+				case "CS-PBX1":
+				  hostedTFN="1-866-216-0989";
+				  break;
+				case "CS-SIP1":
+				  hostedTFN="1-866-380-5566";
+				  break;
+				case "CS-PBX2":
+				  hostedTFN="1-866-218-4907";
+				  break;
+				case "CS-SIP2":
+				  hostedTFN="1-866-388-9566";
+				  break;
+				case "CS-PBX3":
+				  hostedTFN="1-866-516-0958";
+				  break;
+				case "CS-SIP3":
+				  hostedTFN="1-866-464-2542";
+				  break;
+				case "CS-PBX4":
+				  hostedTFN="1-866-210-9231";
+				  break;
+				case "CS-SIP4":
+				  hostedTFN="1-866-504-9464";
+				  break;
+				case "CS-PBX5":
+				  hostedTFN="1-866-512-3056";
+				  break;
+				case "CS-SIP5":
+				  hostedTFN="1-866-260-6454";
+				  break;
+				case "CS-PBX6":
+				  hostedTFN="1-866-512-3057";
+				  break;
+				case "CS-SIP6":
+				  hostedTFN="1-866-260-6455";
+				  break;
+				case "CS-PBX7":
+				  hostedTFN="1-866-512-3058";
+				  break;
+				case "CS-SIP7":
+				  hostedTFN="1-866-332-3682";
+				  break;
+				case "CS-PBX8":
+				  hostedTFN="1-866-512-3059";
+				  break;
+				case "CS-SIP8":
+				  hostedTFN="1-866-332-3893";
+				  break;
+				case "CS-PBX9":
+				  hostedTFN="1-866-840-2745";
+				  break;
+				case "CS-SIP9":
+				  hostedTFN="1-866-239-5828";
+				  break;
+				case "CS-PBX10":
+				  hostedTFN="1-866-549-3476";
+				  break;
+				case "CS-SIP10":
+				  hostedTFN="1-866-211-6946";
+				  break;
+				case "CS-PBXNEWS":
+				  hostedTFN="1-866-334-5353";
+				  break;
+				case "CS-SIPNEWS":
+				  hostedTFN="1-866-601-7911";
+				  break;
+				case "CS-PBX13":
+				  hostedTFN="1-877-211-4295";
+				  break;
+				case "CS-PBX14":
+				  hostedTFN="1-877-211-9563";
+				  break;
+				case "CS-PBX15":
+				  hostedTFN="1-877-211-9714";
+				  break;
+				case "CS-PBX16":
+				  hostedTFN="1-877-213-2078";
+				  break;
+				case "CS-PBX17":
+				  hostedTFN="1-877-213-2082";
+				  break;
+				case "CS-PBX18":
+				  hostedTFN="1-877-213-2083";
+				  break;
+				case "CS-PBX19":
+				  hostedTFN="1-877-213-2084";
+				  break;
+				case "CS-PBX20":
+				  hostedTFN="1-877-213-2089";
+				  break;
+				case "CS-PBX21":
+				  hostedTFN="1-877-214-0402";
+				  break;
+				case "CS-PBX22":
+				  hostedTFN="1-877-214-0403";
+				  break;
+				case "CS-PBX23":
+				  hostedTFN="1-877-214-0507";
+				  break;
+				case "CS-PBX24":
+				  hostedTFN="1-877-214-1041";
+				  break;
+				case "CS-PBX25":
+				  hostedTFN="1-877-214-1943";
+				  break;
+				case "CS-PBX26":
+				  hostedTFN="1-877-214-2223";
+				  break;
+				case "CS-PBX27":
+				  hostedTFN="1-877-214-2695";
+				  break;
+				case "CS-PBX28":
+				  hostedTFN="1-877-216-0095";
+				  break;
+				case "CS-PBX29":
+				  hostedTFN="1-877-216-0123";
+				  break;
+				case "CS-PBX30":
+				  hostedTFN="1-877-216-0124";
+				  break;
+				case "CS-PBX31":
+				  hostedTFN="1-877-216-0136";
+				  break;
+				case "CS-PBX32":
+				  hostedTFN="1-877-216-0137";
+				  break;
+				case "CS-PBX33":
+				  hostedTFN="1-877-216-0139";
+				  break;
+				case "CS-PBX34":
+				  hostedTFN="1-877-225-0176";
+				  break;
+				case "CS-PBX35":
+				  hostedTFN="1-877-225-3532";
+				  break;
+				case "CS-PBX36":
+				  hostedTFN="1-877-225-4193";
+				  break;
+				case "CS-PBX37":
+				  hostedTFN="1-877-227-8259";
+				  break;
+				case "CS-PBX38":
+				  hostedTFN="1-877-227-8530";
+				  break;
+				case "CS-PBX39":
+				  hostedTFN="1-877-227-8581";
+				  break;
+				case "CS-PBX40":
+				  hostedTFN="1-877-227-8702";
+				  break;
+				case "CS-PBX41":
+				  hostedTFN="1-877-228-3143";
+				  break;
+				case "CS-PBX42":
+				  hostedTFN="1-877-228-3240";
+				  break;
+				case "CS-PBX43":
+				  hostedTFN="1-877-228-3654";
+				  break;
+				case "CS-PBX44":
+				  hostedTFN="1-877-228-3681";
+				  break;
+				case "CS-PBX45":
+				  hostedTFN="1-877-228-8874";
+				  break;
+				case "CS-PBX46":
+				  hostedTFN="1-877-229-9368";
+				  break;
+				case "CS-PBX47":
+				  hostedTFN="1-877-231-0960";
+				  break;
+				case "CS-PBX48":
+				  hostedTFN="1-877-231-1158";
+				  break;
+				case "CS-PBX49":
+				  hostedTFN="1-877-231-1478";
+				  break;
+				case "CS-PBX50":
+				  hostedTFN="1-877-231-2263";
+				  break;
+				case "CS-PBX51":
+				  hostedTFN="1-877-231-9769";
+				  break;
+				case "CS-PBX52":
+				  hostedTFN="1-877-231-9801";
+				  break;
+				case "CS-PBX53":
+				  hostedTFN="1-877-231-9863";
+				  break;
+				case "CS-PBX54":
+				  hostedTFN="1-877-232-0813";
+				  break;
+				case "CS-PBX55":
+				  hostedTFN="1-877-232-0814";
+				  break;
+				case "CS-PBX56":
+				  hostedTFN="1-877-232-0815";
+				  break;
+				case "CS-PBX57":
+				  hostedTFN="1-877-232-0817";
+				  break;
+				case "CS-PBX58":
+				  hostedTFN="1-877-232-0826";
+				  break;
+				case "CS-PBX59":
+				  hostedTFN="1-877-232-0834";
+				  break;
+				case "CS-PBX60":
+				  hostedTFN="1-877-232-0837";
+				  break;
+				case "CS-PBX61":
+				  hostedTFN="1-877-232-0843";
+				  break;
+				case "CS-PBX62":
+				  hostedTFN="1-877-232-0844";
+				  break;
+				case "CS-PBX63":
+				  hostedTFN="1-877-241-0902";
+				  break;
+				case "CS-PBX64":
+				  hostedTFN="1-877-244-0445";
+				  break;
+				case "CS-PBX65":
+				  hostedTFN="1-877-248-2538";
+				  break;
+				case "CS-PBX66":
+				  hostedTFN="1-877-248-8223";
+				  break;
+				case "CS-PBX67":
+				  hostedTFN="1-877-253-7226";
+				  break;
+				case "CS-PBX68":
+				  hostedTFN="1-877-253-7428";
+				  break;
+				case "CS-PBX69":
+				  hostedTFN="1-877-253-8431";
+				  break;
+				case "CS-PBX70":
+				  hostedTFN="1-877-253-8520";
+				  break;
+				case "CS-PBX71":
+				  hostedTFN="1-877-253-8622";
+				  break;
+				case "CS-PBX72":
+				  hostedTFN="1-877-253-8732";
+				  break;
+				case "CS-PBX73":
+				  hostedTFN="1-877-253-9391";
+				  break;
+				case "CS-PBX74":
+				  hostedTFN="1-877-253-9469";
+				  break;
+				case "CS-PBX75":
+				  hostedTFN="1-877-253-9486";
+				  break;
+				case "CS-PBX76":
+				  hostedTFN="1-877-253-9552";
+				  break;
+				case "CS-PBX77":
+				  hostedTFN="1-877-254-6846";
+				  break;
+				case "CS-PBX78":
+				  hostedTFN="1-877-256-9641";
+				  break;
+				case "CS-PBX79":
+				  hostedTFN="1-877-257-0531";
+				  break;
+				case "CS-PBX80":
+				  hostedTFN="1-877-257-1224";
+				  break;
+				case "CS-PBX81":
+				  hostedTFN="1-877-257-1243";
+				  break;
+				case "CS-PBX82":
+				  hostedTFN="1-877-257-1846";
+				  break;
+				case "CS-PBX83":
+				  hostedTFN="1-877-257-6028";
+				  break;
+				case "CS-PBX84":
+				  hostedTFN="1-877-257-6805";
+				  break;
+				case "CS-PBX85":
+				  hostedTFN="1-877-257-7179";
+				  break;
+				case "CS-PBX86":
+				  hostedTFN="1-877-257-7366";
+				  break;
+				case "CS-PBX87":
+				  hostedTFN="1-877-257-7524";
+				  break;
+				case "CS-PBX88":
+				  hostedTFN="1-877-261-0317";
+				  break;
+				case "CS-PBX89":
+				  hostedTFN="1-877-261-0549";
+				  break;
+				case "CS-PBX90":
+				  hostedTFN="1-877-261-0981";
+				  break;
+				case "CS-PBX91":
+				  hostedTFN="1-877-261-1140";
+				  break;
+				case "CS-PBX92":
+				  hostedTFN="1-877-261-1142";
+				  break;
+				case "CS-PBX93":
+				  hostedTFN="1-877-261-3636";
+				  break;
+				case "CS-PBX94":
+				  hostedTFN="1-877-261-5388";
+				  break;
+				case "CS-PBX95":
+				  hostedTFN="1-877-261-5732";
+				  break;
+				case "CS-PBX96":
+				  hostedTFN="1-877-261-7380";
+				  break;
+				case "CS-PBX97":
+				  hostedTFN="1-877-263-6088";
+				  break;
+				case "CS-PBX98":
+				  hostedTFN="1-877-266-0251";
+				  break;
+				case "CS-PBX99":
+				  hostedTFN="1-877-266-0817";
+				  break;
+				case "CS-PBX100":
+				  hostedTFN="1-877-266-0835";
+				  break;
+				case "CS-PBX101":
+				  hostedTFN="1-877-266-0945";
+				  break;
+				case "CS-PBX102":
+				  hostedTFN="1-877-266-1639";
+				  break;
+				case "CS-PBX103":
+				  hostedTFN="1-877-266-1663";
+				  break;
+				case "CS-PBX104":
+				  hostedTFN="1-877-266-2640";
+				  break;
+				case "CS-PBX105":
+				  hostedTFN="1-877-266-2760";
+				  break;
+				case "CS-PBX106":
+				  hostedTFN="1-877-266-2832";
+				  break;
+				case "CS-PBX107":
+				  hostedTFN="1-877-266-9915";
+				  break;
+				case "CS-PBX108":
+				  hostedTFN="1-877-270-0671";
+				  break;
+				case "CS-PBX109":
+				  hostedTFN="1-877-270-0683";
+				  break;
+				case "CS-PBX110":
+				  hostedTFN="1-877-264-8236";
+				  break;
+				case "CS-PBX111":
+				  hostedTFN="1-877-273-8525";
+				  break;
+				case "CS-PBX112":
+				  hostedTFN="1-877-273-8573";
+				  break;
+				case "CS-PBX113":
+				  hostedTFN="1-877-273-8595";
+				  break;
+				case "CS-PBX114":
+				  hostedTFN="1-877-273-8643";
+				  break;
+				case "CS-PBX115":
+				  hostedTFN="1-877-273-8734";
+				  break;
+				case "CS-PBX116":
+				  hostedTFN="1-877-273-8789";
+				  break;
+				case "CS-PBX117":
+				  hostedTFN="1-877-273-8924";
+				  break;
+				case "CS-PBX118":
+				  hostedTFN="1-877-273-9013";
+				  break;
+				case "CS-PBX119":
+				  hostedTFN="1-877-278-8418";
+				  break;
+				case "CS-PBX120":
+				  hostedTFN="1-877-283-3649";
+				  break;
+				case "CS-PBX121":
+				  hostedTFN="1-877-283-4037";
+				  break;
+				case "CS-PBX122":
+				  hostedTFN="1-877-283-4458";
+				  break;
+				case "CS-PBX123":
+				  hostedTFN="1-877-283-4471";
+				  break;
+				case "CS-PBX124":
+				  hostedTFN="1-877-283-5113";
+				  break;
+				case "CS-PBX125":
+				  hostedTFN="1-877-283-5117";
+				  break;
+				case "CS-PBX126":
+				  hostedTFN="1-877-283-5118";
+				  break;
+				case "CS-PBX127":
+				  hostedTFN="1-877-283-5121";
+				  break;
+				case "CS-PBX128":
+				  hostedTFN="1-877-283-5130";
+				  break;
+				case "CS-PBX129":
+				  hostedTFN="1-877-283-5146";
+				  break;
+				case "CS-PBX130":
+				  hostedTFN="1-877-283-5153";
+				  break;
+				case "CS-PBX131":
+				  hostedTFN="1-877-284-2461";
+				  break;
+				case "CS-PBX132":
+				  hostedTFN="1-877-284-4563";
+				  break;
+				case "CS-PBX133":
+				  hostedTFN="1-877-285-7557";
+				  break;
+				case "CS-PBX134":
+				  hostedTFN="1-877-650-0967";
+				  break;
+				case "CS-PBX135":
+				  hostedTFN="1-877-306-2440";
+				  break;
+				case "CS-PBX136":
+				  hostedTFN="1-877-323-0293";
+				  break;
+				case "CS-PBX137":
+				  hostedTFN="1-877-325-1079";
+				  break;
+				case "CS-PBX138":
+				  hostedTFN="1-877-332-0775";
+				  break;
+				case "CS-PBX139":
+				  hostedTFN="1-877-341-2439";
+				  break;
+				case "CS-PBX140":
+				  hostedTFN="1-877-804-9199";
+				  break;
+				case "CS-PBX141":
+				  hostedTFN="1-877-343-2898";
+				  break;
+				case "CS-PBX142":
+				  hostedTFN="1-877-345-0381";
+				  break;
+				case "CS-PBX143":
+				  hostedTFN="1-877-820-7489";
+				  break;
+				case "CS-PBX144":
+				  hostedTFN="1-877-356-8807";
+				  break;
+				case "CS-PBX145":
+				  hostedTFN="1-877-362-5714";
+				  break;
+				case "CS-PBX146":
+				  hostedTFN="1-877-362-5716";
+				  break;
+				case "CS-PBX147":
+				  hostedTFN="1-877-362-5731";
+				  break;
+				case "CS-PBX148":
+				  hostedTFN="1-877-362-5740";
+				  break;
+				case "CS-PBX149":
+				  hostedTFN="1-877-362-5751";
+				  break;
+				case "CS-PBX150":
+				  hostedTFN="1-877-362-5753";
+				  break;
+				case "CS-PBX151":
+				  hostedTFN="1-877-362-5760";
+				  break;
+				case "CS-PBX152":
+				  hostedTFN="1-877-362-5761";
+				  break;
+				case "CS-PBX153":
+				  hostedTFN="1-877-363-2153";
+				  break;
+				case "CS-PBX154":
+				  hostedTFN="1-877-367-6031";
+				  break;
+				case "CS-PBX155":
+				  hostedTFN="1-877-384-5591";
+				  break;
+				case "CS-PBX156":
+				  hostedTFN="1-877-384-5957";
+				  break;
+				case "CS-PBX157":
+				  hostedTFN="1-877-390-3655";
+				  break;
+				case "CS-PBX158":
+				  hostedTFN="1-877-390-5777";
+				  break;
+				case "CS-PBX159":
+				  hostedTFN="1-877-391-7527";
+				  break;
+				case "CS-PBX160":
+				  hostedTFN="1-877-391-7528";
+				  break;
+				case "CS-PBX161":
+				  hostedTFN="1-877-391-7533";
+				  break;
+				case "CS-PBX162":
+				  hostedTFN="1-877-391-7545";
+				  break;
+				case "CS-PBX163":
+				  hostedTFN="1-877-391-7549";
+				  break;
+				case "CS-PBX164":
+				  hostedTFN="1-877-391-7551";
+				  break;
+				case "CS-PBX165":
+				  hostedTFN="1-877-417-6459";
+				  break;
+				case "CS-PBX166":
+				  hostedTFN="1-877-428-3284";
+				  break;
+				case "CS-PBX167":
+				  hostedTFN="1-877-429-4136";
+				  break;
+				case "CS-PBX168":
+				  hostedTFN="1-877-434-5382";
+				  break;
+				case "CS-PBX169":
+				  hostedTFN="1-877-437-5360";
+				  break;
+				case "CS-PBX170":
+				  hostedTFN="1-877-437-5362";
+				  break;
+				case "CS-PBX171":
+				  hostedTFN="1-877-437-5369";
+				  break;
+				case "CS-PBX172":
+				  hostedTFN="1-877-444-2538";
+				  break;
+				case "CS-PBX173":
+				  hostedTFN="1-877-448-5473";
+				  break;
+				case "CS-PBX174":
+				  hostedTFN="1-877-448-5476";
+				  break;
+				case "CS-PBX175":
+				  hostedTFN="1-877-448-5480";
+				  break;
+				case "CS-PBX176":
+				  hostedTFN="1-877-448-5481";
+				  break;
+				case "CS-PBX177":
+				  hostedTFN="1-877-462-2970";
+				  break;
+				case "CS-PBX178":
+				  hostedTFN="1-877-470-6925";
+				  break;
+				case "CS-PBX179":
+				  hostedTFN="1-877-472-5059";
+				  break;
+				case "CS-PBX180":
+				  hostedTFN="1-877-479-4823";
+				  break;
+				case "CS-PBX181":
+				  hostedTFN="1-877-480-8073";
+				  break;
+				case "CS-PBX182":
+				  hostedTFN="1-877-480-8075";
+				  break;
+				case "CS-PBX183":
+				  hostedTFN="1-877-499-3402";
+				  break;
+				case "CS-PBX184":
+				  hostedTFN="1-877-503-2190";
+				  break;
+				case "CS-PBX185":
+				  hostedTFN="1-877-509-8863";
+				  break;
+				case "CS-PBX186":
+				  hostedTFN="1-877-514-3216";
+				  break;
+				case "CS-PBX187":
+				  hostedTFN="1-877-514-3219";
+				  break;
+				case "CS-PBX188":
+				  hostedTFN="1-877-514-3220";
+				  break;
+				case "CS-PBX189":
+				  hostedTFN="1-877-514-3225";
+				  break;
+				case "CS-PBX190":
+				  hostedTFN="1-877-525-1218";
+				  break;
+				case "CS-PBX191":
+				  hostedTFN="1-877-525-1277";
+				  break;
+				case "CS-PBX192":
+				  hostedTFN="1-877-525-1279";
+				  break;
+				case "CS-PBX193":
+				  hostedTFN="1-877-525-1280";
+				  break;
+				case "CS-PBX194":
+				  hostedTFN="1-877-525-1281";
+				  break;
+				case "CS-PBX195":
+				  hostedTFN="1-877-525-1282";
+				  break;
+				case "CS-PBX196":
+				  hostedTFN="1-877-528-9190";
+				  break;
+				case "CS-PBX197":
+				  hostedTFN="1-877-532-9123";
+				  break;
+				case "CS-PBX198":
+				  hostedTFN="1-877-552-7644";
+				  break;
+				case "CS-PBX199":
+				  hostedTFN="1-877-556-7501";
+				  break;
+				case "CS-PBX200":
+				  hostedTFN="1-877-569-2527";
+				  break;
+				case "CS-PBX201":
+				  hostedTFN="1-877-575-7645";
+				  break;
+				case "CS-PBX202":
+				  hostedTFN="1-877-575-7734";
+				  break;
+				case "CS-PBX203":
+				  hostedTFN="1-877-575-7742";
+				  break;
+				case "CS-PBX204":
+				  hostedTFN="1-877-575-7748";
+				  break;
+				case "CS-PBX205":
+				  hostedTFN="1-877-575-7749";
+				  break;
+				case "CS-PBX206":
+				  hostedTFN="1-877-575-7751";
+				  break;
+				case "CS-PBX207":
+				  hostedTFN="1-877-597-0494";
+				  break;
+				case "CS-PBX208":
+				  hostedTFN="1-877-597-0499";
+				  break;
+				case "CS-PBX209":
+				  hostedTFN="1-877-602-7974";
+				  break;
+				case "CS-PBX210":
+				  hostedTFN="1-877-613-6236";
+				  break;
+				case "CS-PBX211":
+				  hostedTFN="1-877-613-6237";
+				  break;
+				case "CS-PBX212":
+				  hostedTFN="1-877-613-6241";
+				  break;
+				case "CS-PBX213":
+				  hostedTFN="1-877-613-6244";
+				  break;
+				case "CS-PBX214":
+				  hostedTFN="1-877-627-1993";
+				  break;
+				case "CS-PBX215":
+				  hostedTFN="1-877-627-3767";
+				  break;
+				case "CS-PBX216":
+				  hostedTFN="1-877-637-8565";
+				  break;
+				case "CS-PBX217":
+				  hostedTFN="1-877-637-8567";
+				  break;
+				case "CS-PBX218":
+				  hostedTFN="1-877-637-8569";
+				  break;
+				case "CS-PBX219":
+				  hostedTFN="1-877-637-8570";
+				  break;
+				case "CS-PBX220":
+				  hostedTFN="1-877-637-8572";
+				  break;
+				case "CS-PBX221":
+				  hostedTFN="1-877-637-8574";
+				  break;
+				case "CS-PBX222":
+				  hostedTFN="1-877-650-0973";
+				  break;
+				case "CS-PBX223":
+				  hostedTFN="1-877-660-3891";
+				  break;
+				case "CS-PBX224":
+				  hostedTFN="1-877-660-3895";
+				  break;
+				case "CS-PBX225":
+				  hostedTFN="1-877-665-6811";
+				  break;
+				case "CS-PBX226":
+				  hostedTFN="1-877-666-1001";
+				  break;
+				case "CS-PBX227":
+				  hostedTFN="1-877-674-6447";
+				  break;
+				case "CS-PBX228":
+				  hostedTFN="1-877-341-9279";
+				  break;
+				case "CS-PBX229":
+				  hostedTFN="1-877-712-8903";
+				  break;
+				case "CS-PBX230":
+				  hostedTFN="1-877-713-3690";
+				  break;
+				case "CS-PBX231":
+				  hostedTFN="1-877-721-6014";
+				  break;
+				case "CS-PBX232":
+				  hostedTFN="1-877-721-6027";
+				  break;
+				case "CS-PBX233":
+				  hostedTFN="1-877-721-6195";
+				  break;
+				case "CS-PBX234":
+				  hostedTFN="1-877-722-7306";
+				  break;
+				case "CS-PBX235":
+				  hostedTFN="1-877-722-7615";
+				  break;
+				case "CS-PBX236":
+				  hostedTFN="1-877-722-7618";
+				  break;
+				case "CS-PBX237":
+				  hostedTFN="1-877-722-7619";
+				  break;
+				case "CS-PBX238":
+				  hostedTFN="1-877-722-7621";
+				  break;
+				case "CS-PBX239":
+				  hostedTFN="1-877-728-3730";
+				  break;
+				case "CS-PBX240":
+				  hostedTFN="1-877-729-2556";
+				  break;
+				case "CS-PBX241":
+				  hostedTFN="1-877-734-3104";
+				  break;
+				case "CS-SIP13":
+				  hostedTFN="1-877-742-0438";
+				  break;
+				case "CS-SIP14":
+				  hostedTFN="1-877-745-7627";
+				  break;
+				case "CS-SIP15":
+				  hostedTFN="1-877-745-7634";
+				  break;
+				case "CS-SIP16":
+				  hostedTFN="1-877-745-7639";
+				  break;
+				case "CS-SIP17":
+				  hostedTFN="1-877-745-7640";
+				  break;
+				case "CS-SIP18":
+				  hostedTFN="1-877-745-7642";
+				  break;
+				case "CS-SIP19":
+				  hostedTFN="1-877-745-7644";
+				  break;
+				case "CS-SIP20":
+				  hostedTFN="1-877-745-7646";
+				  break;
+				case "CS-SIP21":
+				  hostedTFN="1-877-745-7647";
+				  break;
+				case "CS-SIP22":
+				  hostedTFN="1-877-745-7648";
+				  break;
+				case "CS-SIP23":
+				  hostedTFN="1-877-745-7656";
+				  break;
+				case "CS-SIP24":
+				  hostedTFN="1-877-761-4877";
+				  break;
+				case "CS-SIP25":
+				  hostedTFN="1-877-762-2293";
+				  break;
+				case "CS-SIP26":
+				  hostedTFN="1-877-762-2294";
+				  break;
+				case "CS-SIP27":
+				  hostedTFN="1-877-367-6035";
+				  break;
+				case "CS-SIP28":
+				  hostedTFN="1-877-214-2739";
+				  break;
+				case "CS-SIP29":
+				  hostedTFN="1-877-273-8641";
+				  break;
+				case "CS-SIP30":
+				  hostedTFN="1-877-274-7460";
+				  break;
+				case "CS-SIP31":
+				  hostedTFN="1-877-781-7181";
+				  break;
+				case "CS-SIP32":
+				  hostedTFN="1-877-798-2842";
+				  break;
+				case "CS-SIP33":
+				  hostedTFN="1-877-798-2843";
+				  break;
+				case "CS-SIP34":
+				  hostedTFN="1-877-798-2844";
+				  break;
+				case "CS-SIP35":
+				  hostedTFN="1-877-798-2845";
+				  break;
+				case "CS-SIP36":
+				  hostedTFN="1-877-798-2846";
+				  break;
+				case "CS-SIP37":
+				  hostedTFN="1-877-798-2851";
+				  break;
+				case "CS-SIP38":
+				  hostedTFN="1-877-798-2852";
+				  break;
+				case "CS-SIP39":
+				  hostedTFN="1-877-798-2853";
+				  break;
+				case "CS-SIP40":
+				  hostedTFN="1-877-804-9198";
+				  break;
+				case "CS-SIP41":
+				  hostedTFN="1-877-804-9206";
+				  break;
+				case "CS-SIP42":
+				  hostedTFN="1-877-804-9216";
+				  break;
+				case "CS-SIP43":
+				  hostedTFN="1-877-805-7971";
+				  break;
+				case "CS-SIP44":
+				  hostedTFN="1-877-820-7493";
+				  break;
+				case "CS-SIP45":
+				  hostedTFN="1-877-820-7494";
+				  break;
+				case "CS-SIP46":
+				  hostedTFN="1-877-820-7498";
+				  break;
+				case "CS-SIP47":
+				  hostedTFN="1-877-283-4024";
+				  break;
+				case "CS-SIP48":
+				  hostedTFN="1-877-829-2543";
+				  break;
+				case "CS-SIP49":
+				  hostedTFN="1-877-832-9192";
+				  break;
+				case "CS-SIP50":
+				  hostedTFN="1-877-835-0036";
+				  break;
+				case "CS-SIP51":
+				  hostedTFN="1-877-842-3729";
+				  break;
+				case "CS-SIP52":
+				  hostedTFN="1-877-848-8642";
+				  break;
+				case "CS-SIP53":
+				  hostedTFN="1-877-849-9673";
+				  break;
+				case "CS-SIP54":
+				  hostedTFN="1-877-850-5601";
+				  break;
+				case "CS-SIP55":
+				  hostedTFN="1-877-856-1095";
+				  break;
+				case "CS-SIP56":
+				  hostedTFN="1-877-856-1196";
+				  break;
+				case "CS-SIP57":
+				  hostedTFN="1-877-856-1197";
+				  break;
+				case "CS-SIP58":
+				  hostedTFN="1-877-856-1198";
+				  break;
+				case "CS-SIP59":
+				  hostedTFN="1-877-856-1201";
+				  break;
+				case "CS-SIP60":
+				  hostedTFN="1-877-856-1202";
+				  break;
+				case "CS-SIP61":
+				  hostedTFN="1-877-874-3670";
+				  break;
+				case "CS-SIP62":
+				  hostedTFN="1-877-875-2145";
+				  break;
+				case "CS-SIP63":
+				  hostedTFN="1-877-877-3449";
+				  break;
+				case "CS-SIP64":
+				  hostedTFN="1-877-883-2186";
+				  break;
+				case "CS-SIP65":
+				  hostedTFN="1-877-886-9780";
+				  break;
+				case "CS-SIP66":
+				  hostedTFN="1-877-290-6745";
+				  break;
+				case "CS-SIP67":
+				  hostedTFN="1-877-888-2579";
+				  break;
+				case "CS-SIP68":
+				  hostedTFN="1-877-888-2660";
+				  break;
+				case "CS-SIP69":
+				  hostedTFN="1-877-888-7841";
+				  break;
+				case "CS-SIP70":
+				  hostedTFN="1-877-897-1218";
+				  break;
+				case "CS-SIP71":
+				  hostedTFN="1-877-897-1229";
+				  break;
+				case "CS-SIP72":
+				  hostedTFN="1-877-897-1233";
+				  break;
+				case "CS-SIP73":
+				  hostedTFN="1-877-897-1237";
+				  break;
+				case "CS-SIP74":
+				  hostedTFN="1-877-897-1239";
+				  break;
+				case "CS-SIP75":
+				  hostedTFN="1-877-897-1242";
+				  break;
+				case "CS-SIP76":
+				  hostedTFN="1-877-897-1243";
+				  break;
+				case "CS-SIP77":
+				  hostedTFN="1-877-899-9297";
+				  break;
+				case "CS-SIP78":
+				  hostedTFN="1-877-902-2243";
+				  break;
+				case "CS-SIP79":
+				  hostedTFN="1-877-921-6738";
+				  break;
+				case "CS-SIP80":
+				  hostedTFN="1-877-935-4895";
+				  break;
+				case "CS-SIP81":
+				  hostedTFN="1-877-935-5246";
+				  break;
+				case "CS-SIP82":
+				  hostedTFN="1-877-946-6664";
+				  break;
+				case "CS-SIP83":
+				  hostedTFN="1-877-964-2847";
+				  break;
+				default: 
+        		  hostedTFN="1-866-210-7143";
+        		  bUsingDefault=true;
+			}
+			if (hostedTFN!=null)
+			{
+				jQuery(".hostedtfn").text(hostedTFN);
+				if (cookieD!=d)
+				{
+					// set cookie
+					var cDomain = "comwave.net";
+					var expDays = 30;
+					var exp = new Date(); 
+					exp.setTime(exp.getTime() + (expDays*24*60*60*1000));
+					var refdate = new Date();
+					document.cookie = "comwavehostedtfnn=" + escape(d + "&&&" + refdate.toGMTString()) + "; expires=" + exp.toGMTString() + "; path=/" + "; domain=" + cDomain;
+				}
+			}
+		}
+	}
+}
+
+function setDynWholeSaleTfn()
+{
+	if (window.location.href.toLowerCase().indexOf("wholesale") > -1)
+	{
+		var wholesaleTFN=null;
+		var d="null"
+		var cookieD = "null"
+		var allCookies = document.cookie;
+		var cPos = allCookies.indexOf("comwavewholesaletfnn=");
+		if(cPos != -1)
+		{
+			var cdstart = cPos + 21;
+			var cdend = allCookies.indexOf(";", cdstart);
+			if(cdend == -1) cdend = allCookies.length;
+			var cookieContent = allCookies.substring(cdstart,cdend);
+			cookieContent = unescape(cookieContent);
+			var cdatestart = cookieContent.indexOf("&&&", 0);
+			var cdateend = cookieContent.length;
+			d = cookieContent.substring(0,cdatestart);
+			cookieD = d;
+			var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+		}
+		if (getURLParameter("d")!="null")
+		{
+			d = getURLParameter("d");
+		}
+		if (d!="null")
+		{
+			switch (d)
+			{
+				case "CS-WH1":
+				  wholesaleTFN="1-866-623-2922";
+				  break;  
+				case "CS-WH2":
+				  wholesaleTFN="1-866-623-2922";
+				  break;
+				case "CS-WH3":
+				  wholesaleTFN="1-866-623-2922";
+				  break;  
+				case "CS-WH4":
+				  wholesaleTFN="1-866-623-2922";
+				  break;
+				case "CS-WH5":
+				  wholesaleTFN="1-866-623-2922";
+				  break;  
+				case "CS-WH6":
+				  wholesaleTFN="1-866-623-2922";
+				  break;
+				case "CS-WH7":
+				  wholesaleTFN="1-866-623-2922";
+				  break;
+				case "CS-WH8":
+				  wholesaleTFN="1-866-623-2922";
+				  break;
+			}
+			if (wholesaleTFN!=null)
+			{
+				jQuery(".hostedtfn").text(wholesaleTFN);
+				if (cookieD!=d)
+				{
+					// set cookie
+					var cDomain = "comwave.net";
+					var expDays = 30;
+					var exp = new Date(); 
+					exp.setTime(exp.getTime() + (expDays*24*60*60*1000));
+					var refdate = new Date();
+					document.cookie = "comwavewholesaletfnn=" + escape(d + "&&&" + refdate.toGMTString()) + "; expires=" + exp.toGMTString() + "; path=/" + "; domain=" + cDomain;
+				}
+			}
+		}
+	}
+}
+
+function setNumCountriesGlobal()
+{
+	jQuery("span.numcountry").text("59");
+}
+
+function setDynBusinessInternetTfn()
+{
+	if ( window.location.href.toLowerCase().indexOf("business-internet") > -1 )
+	{
+		var businessInternetTFN=null;
+		var bUsingDefault=false;
+		var d="null";
+		var cookieD = "null";
+		var cookieString = 'comwavebusinessinternettfn=';
+		var cookieStringLength = cookieString.length;
+		var allCookies = document.cookie;
+		var cPos = allCookies.indexOf(cookieString);
+		if(cPos != -1)
+		{
+			var cdstart = cPos + cookieStringLength;
+			var cdend = allCookies.indexOf(";", cdstart);
+			if(cdend == -1) cdend = allCookies.length;
+			var cookieContent = allCookies.substring(cdstart,cdend);
+			cookieContent = unescape(cookieContent);
+			var cdatestart = cookieContent.indexOf("&&&", 0);
+			var cdateend = cookieContent.length;
+			d = cookieContent.substring(0,cdatestart);
+			cookieD = d;
+			var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+		}
+		if (getURLParameter("d")!="null")
+		{
+			d = getURLParameter("d");
+		}
+		if (d!="null")
+		{
+			switch (d)
+			{
+				case "CS-INT1":
+				  businessInternetTFN="1-866-840-2890";
+				  break;  
+				case "CS-INT2":
+				  businessInternetTFN="1-866-885-4023";
+				  break;
+				default: 
+        		  businessInternetTFN="1-866-210-7143";
+        		  bUsingDefault=true;
+			}
+			if (businessInternetTFN!=null)
+			{
+				jQuery(".internettfn").text(businessInternetTFN);
+				if (cookieD!=d)
+				{
+					// set cookie
+					var cDomain = "comwave.net";
+					var expDays = 30;
+					var exp = new Date(); 
+					exp.setTime(exp.getTime() + (expDays*24*60*60*1000));
+					var refdate = new Date();
+					document.cookie = cookieString + escape(d + "&&&" + refdate.toGMTString()) + "; expires=" + exp.toGMTString() + "; path=/" + "; domain=" + cDomain;
+				}
+			}
+		}
+	}
+}
+
+jQuery(document).ready(function() {
+
+  var bOverideCookieIsPresent = (document.cookie.indexOf('comwaveoveridesignupid=')!=-1);
+  var bLDOverideCookieIsPresent = (document.cookie.indexOf('comwaveldtnstart')!=-1);
+  var bTNOverideCookieIsPresent = (document.cookie.indexOf('comwavelptnstart')!=-1);
+
+  var homeptfn='';
+  var bundletfn='';
+
+  // update hp tfn's and signup links if present
+  if (!bLDOverideCookieIsPresent && !bTNOverideCookieIsPresent)
+  {
+  	homeptfn=getHpTFN();
+  	bundletfn=getBundleTFN();	
+  }
+  else
+  {
+  	if (bLDOverideCookieIsPresent)
+  	{
+	  	// get LD TN from cookie and use it to overide numbers on entire site
+	  	homeptfn=document.cookie.substring(document.cookie.indexOf('comwaveldtnstart')+16,document.cookie.indexOf('comwaveldtnend'));
+  	}
+  	else if (bTNOverideCookieIsPresent)
+  	{
+  		// get landing page TN from cookie and use it to overide numbers on entire site
+	  	homeptfn=document.cookie.substring(document.cookie.indexOf('comwavelptnstart')+16,document.cookie.indexOf('comwavelptnend'));
+  	}
+  }
+  
+  if (jQuery("#main_content").hasClass("dsltfn") && !bOverideCookieIsPresent)
+  {
+  	homeptfn=(bundletfn!='') ? bundletfn : homeptfn;
+  }
+  jQuery("span.hptfn").text(homeptfn);
+
+  if (bOverideCookieIsPresent)
+  {
+  	jQuery("span.ldtfn").text(homeptfn);
+  }
+
+  //jQuery("span.hptfn").text("1-999-999-9999");
+  jQuery.each(jQuery('a[href*="/sign-up/residential2/sign_me_up_step1?hpPlan="]'), function() {
+      var hr = jQuery(this).attr("href");
+	  jQuery(this).attr("href",hr + getHpDealerAgentPrependStr());
+	  //jQuery(this).attr("href",hr + "&d=2000&a=2");
+   });
+
+   // update bundle tfn's
+   if (bundletfn=='' || bOverideCookieIsPresent)
+   {
+      jQuery("span.bundletfn").text(homeptfn);		
+   }
+   else
+   {
+      jQuery("span.bundletfn").text(bundletfn);
+   }
+   	
+
+   if (!bOverideCookieIsPresent)
+   {
+	   // update ld tfn's and signup links if present	
+	   updateLDTfnAndSignupLinks();
+	   
+	   setDynHostedPbxTfn();
+	   
+	   setDynWholeSaleTfn();
+	   
+	   setNumCountriesGlobal();
+
+	   setDynBusinessInternetTfn();
+	}
+
+	// special cases for super cookie override
+	if (bOverideCookieIsPresent)
+	{
+		if (window.location.href.indexOf('/residential-landing/')!==-1)
+		{
+			jQuery('section#main_content div.inside div.left.landing.top div.head_signUp h2.orange').text(homeptfn);
+		}
+		else if (window.location.href.indexOf('/business-home/')!==-1)
+		{
+			jQuery('div.right.banner_title_adj p.orange').text(homeptfn);
+		}
+		else if (window.location.href.indexOf('/fr/business-line-')!==-1)
+		{
+			jQuery('#main_content > div > aside > div > div.head_signUp > h2.orange').text(homeptfn);
+		}
+		else if (window.location.href.indexOf('/business-line-')!==-1)
+		{
+			jQuery('aside.left.business_banner div.right div.head_signUp h2 span.orange').text(homeptfn);
+		}
+		else if (window.location.href.indexOf('/business-long-distance/')!==-1)
+		{
+			jQuery('div.right.res_LD_banner div.head_signUp p.orange, div.right.res_LD_banner div.head_signUp h2.orange').text(homeptfn);
+		}
+		else if (window.location.href.indexOf('/fr/residential-long-distance/')!==-1)
+		{
+			jQuery('div.right.res_LD_banner div.head_signUp h2.orange').text(homeptfn);
+		}
+		else if (window.location.href.indexOf('/business-landing/')!==-1)
+		{
+			jQuery('section#main_content div.inside div.left.landing.top div.head_signUp .orange').text(homeptfn);
+		}
+		jQuery('span.internettfn, .hostedtfn').text(homeptfn);
+	}
+
+});
+
+

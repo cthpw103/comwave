@@ -1,0 +1,14 @@
+jQuery(document).ready(function() {
+	if(typeof pngfix == "function")
+	{
+		jQuery("div.popup").show(); pngfix(); jQuery("div.popup").hide();
+	}
+	jQuery("div.popup").bgiframe().draggable();
+	if (jQuery("#servererrors").length >0 && jQuery("#servererrors").html().trim().length != 0)
+	{
+		if(typeof showValidationPopup == 'function')
+		{
+			showValidationPopup();
+		}
+	}
+});

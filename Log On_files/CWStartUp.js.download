@@ -1,0 +1,27 @@
+/*
+* @author: Azim Zakhidov a.k.a. 3oxa
+* @email: azakhidov@gmail.com
+* @email: azim.zakhidov@cyberplex.com
+* @icq:   62472200
+*/
+window.addEvent('domready',function(){
+    //block a.href=#
+    $$('a[href=#]').each(function(a){ a.addEvent('click',function(ev){var ev = new Event(ev).stop()}); });
+    CWFeatures();
+});
+
+function CWFeatures(){
+    var togs = $$('li.toggler');
+    var elms = $$('div.stretch');
+    var cont = $('accordion');
+    if ( togs.length>0 && togs.length == elms.length && cont){
+        new Accordion('li.toggler', 'div.stretch',{
+          onActive:function(tog,elm){
+            elm.setStyle('z-index',100);
+          },
+          onBackground:function(tog,elm){
+              elm.setStyle('z-index',10);
+          }
+        },$('accordion'));
+    }
+}

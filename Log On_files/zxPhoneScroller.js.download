@@ -1,0 +1,66 @@
+/*
+* @author: Azim Zakhidov a.k.a. 3oxa
+* @email: azakhidov@gmail.com
+* @email: azim.zakhidov@cyberplex.com
+* @icq:   62472200
+*/
+
+window.addEvent('domready',function(){
+    PhoneScroller = new zxPhoneScroller( );
+});
+
+var zxPhoneScroller = new Class({
+
+    scroll:null,
+    scrollFx:null,
+    desc:[],
+
+    options : {
+        descWrap:'PhoneDescWrap',
+        descClass:'.PhoneDesc',
+        scrollWrap:'PhoneList',
+        prodBtns:'#PhoneList li',
+        suffix:'Desc'
+    },
+
+    setOptions:function(options){
+        this.options = Object.extend(this.options, options || {} );
+    },
+
+    initialize:function(options){
+        if ( !$(this.options.descWrap) || !$(this.options.scrollWrap) ) return null;        
+        this.bindScrolling( $(this.options.scrollWrap) );
+        this.bindShowDescription();
+    },
+
+    bindScrolling:function(div){
+        this.scroll = new Scroller(div, {area: 75, velocity: 0.1});
+        div.addEvent('mouseenter', this.scroll.start.bind(this.scroll));
+        div.addEvent('mouseleave', this.scroll.stop.bind(this.scroll));
+    },
+
+    bindShowDescription:function(){
+        this.scrollFx = new Fx.Scroll(this.options.descWrap, {
+            wait:false,
+            duration:1500,
+            offset:{'x':0,'y':0},
+            transition:Fx.Transitions.Quint.easeOut
+        });
+
+        $$(this.options.prodBtns).each(function( btn ){
+            btn.addEvent('click',function(){
+                var elm = btn.id + this.options.suffix;
+                if ( $(elm) ){
+                	$$(this.options.descClass).each(function( des ){
+                		if (des == $(elm) ){
+                			des.effect('opacity', {duration: 1000, transition: Fx.Transitions.linear}).start(0,1);                			
+                		}else{
+                			des.effect('opacity', {duration: 500, transition: Fx.Transitions.linear}).start(1,0);                			
+                		}
+                	}.bind(this));
+                }
+            }.bind(this));
+        },this);
+    }
+    
+});

@@ -1,0 +1,515 @@
+
+function getSignupIDFromCookieName(inputCookiename)
+{
+	var result='';
+	var cookiename = inputCookiename + '=';
+	var allCookies = document.cookie;
+	var cPos = allCookies.indexOf(cookiename);
+	if(cPos != -1)
+	{
+		var cdstart = cPos + cookiename.length;
+		var cdend = allCookies.indexOf(";", cdstart);
+		if(cdend == -1) cdend = allCookies.length;
+		var cookieContent = allCookies.substring(cdstart,cdend);
+		cookieContent = unescape(cookieContent);
+		var cdatestart = cookieContent.indexOf("&&&", 0);
+		var cdateend = cookieContent.length;
+		result = cookieContent.substring(0,cdatestart);
+		var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+	}
+	return result;
+}
+
+function getFlashVars()
+{
+	var fv="";
+	var cComwaveHPSignupID="";
+
+	cComwaveHPSignupID = getSignupIDFromCookieName('comwaveoveridesignupid');
+	if (cComwaveHPSignupID.length==0)
+	{
+		cComwaveHPSignupID = getSignupIDFromCookieName('comwavehpsignupid');
+	}
+	/*
+	var allCookies = document.cookie;
+	var cPos = allCookies.indexOf("comwavehpsignupid=");
+	if(cPos != -1)
+	{
+		var cdstart = cPos + 18;
+		var cdend = allCookies.indexOf(";", cdstart);
+		if(cdend == -1) cdend = allCookies.length;
+		var cookieContent = allCookies.substring(cdstart,cdend);
+		cookieContent = unescape(cookieContent);
+		var cdatestart = cookieContent.indexOf("&&&", 0);
+		var cdateend = cookieContent.length;
+		cComwaveHPSignupID = cookieContent.substring(0,cdatestart);
+		var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+	}
+	*/
+	
+	var prms=cComwaveHPSignupID.split("-");
+	var dealerId=null;
+	if (prms[0])
+	{
+		dealerId=prms[0];
+	}
+	var agentId=null;
+	if (prms[1])
+	{
+		agentId=prms[1];
+	}
+	
+	if (dealerId===null || dealerId.length===0)
+	{
+		fv="tn=1-866-518-0963";
+		return fv;
+	}
+	
+	switch (dealerId)
+	{
+	//case "1131": // retired
+	//  fv="tn=1-866-518-0963";
+	//  if (agentId!=null && agentId.length>0)
+	//  {
+	//	if (agentId=="1") fv="tn=1-866-206-7473";
+	//  }
+	//  break;
+	case "1167":
+	  fv="tn=1-866-517-9143";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-866-517-9143";
+		else if (agentId=="2") fv="tn=1-866-210-9256";
+	  }
+	  break;
+	//case "1168":
+	//  fv="tn=1-866-210-9265";
+	//  if (agentId!=null && agentId.length>0)
+	//  {
+	//	if (agentId=="1") fv="tn=1-866-210-9265";
+		//else if (agentId=="2") fv="tn=1-866-517-9141"; // retired
+		//else if (agentId=="3") fv="tn=1-866-210-9235"; // retired
+	//  }
+	//  break;
+	case "1169":
+	  fv="tn=1-866-517-9144";
+	  break;
+	case "1170":
+	  fv="tn=1-866-885-9926";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-866-885-9926";
+		else if (agentId=="2") fv="tn=1-866-779-9943";
+		else if (agentId=="3") fv="tn=1-866-774-0129";
+		else if (agentId=="4") fv="tn=1-866-774-0130";
+		else if (agentId=="5") fv="tn=1-866-210-7152";
+		else if (agentId=="6") fv="tn=1-866-769-8710";
+		else if (agentId=="7") fv="tn=1-866-719-2558";
+		else if (agentId=="8") fv="tn=1-866-657-6732";
+		else if (agentId=="9") fv="tn=1-866-518-0257";
+		else if (agentId=="10") fv="tn=1-866-518-0955";
+		else if (agentId=="11") fv="tn=1-866-518-0959";
+		else if (agentId=="12") fv="tn=1-866-209-4074";
+		else if (agentId=="13") fv="tn=1-866-209-0113";
+		else if (agentId=="14") fv="tn=1-866-206-7472";
+		else if (agentId=="15") fv="tn=1-866-544-7637";
+		else if (agentId=="16") fv="tn=1-866-518-1049";
+		else if (agentId=="17") fv="tn=1-866-518-0956";
+		else if (agentId=="18") fv="tn=1-866-210-7144";
+		else if (agentId=="19") fv="tn=1-866-518-0961";
+		else if (agentId=="20") fv="tn=1-866-219-7952";
+		else if (agentId=="21") fv="tn=1-866-601-7917";
+		else if (agentId=="22") fv="tn=1-866-769-9598";
+		else if (agentId=="23") fv="tn=1-866-714-8230";
+		else if (agentId=="24") fv="tn=1-866-618-4186";
+		else if (agentId=="25") fv="tn=1-866-517-9141";
+		else if (agentId=="26") fv="tn=1-866-210-9235";
+		else if (agentId=="27") fv="tn=1-866-210-9265";
+		else if (agentId=="28") fv="tn=1-866-518-9219";
+		else if (agentId=="29") fv="tn=1-866-210-9280";
+		else if (agentId=="30") fv="tn=1-866-452-3801";
+		else if (agentId=="31") fv="tn=1-866-516-0948";
+		else if (agentId=="32") fv="tn=1-866-762-9482";
+		else if (agentId=="33") fv="tn=1-866-695-3138";
+		else if (agentId=="34") fv="tn=1-866-565-3375";
+		else if (agentId=="35") fv="tn=1-866-518-0253";
+		else if (agentId=="36") fv="tn=1-866-716-3388";
+	  }
+	  break;
+	case "1171":
+	  fv="tn=1-866-217-3571";
+	  break;
+	case "1172":
+	  fv="tn=1-866-334-3952";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-866-334-3952";
+		else if (agentId=="2") fv="tn=1-866-203-2986";
+		else if (agentId=="3") fv="tn=1-866-206-7470";
+		else if (agentId=="4") fv="tn=1-866-935-3569";
+		else if (agentId=="5") fv="tn=1-866-518-0953";
+		//else if (agentId=="6") fv="tn=1-866-518-0956"; // retired
+	  }
+	  break;
+	//case "1173":
+	//  fv="tn=1-866-518-0961"; // retired
+	//  break;
+	//case "1177":
+	//  fv="tn=1-866-518-1049"; // retired
+	//  break;  
+	case "1179":
+	  fv="tn=1-866-885-5751";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-866-885-5751";
+		else if (agentId=="2") fv="tn=1-866-799-5440";
+	  }
+	  break;
+	case "1181":
+	  fv="tn=1-866-261-9603";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-866-261-9603";
+		else if (agentId=="2") fv="tn=1-866-463-8057";
+	  }
+	  break;
+    //case "1185":
+	//  fv="tn=1-866-762-9469";
+	//  if (agentId!=null && agentId.length>0)
+	//  {
+	//	if (agentId=="1") fv="tn=1-866-762-9469";
+		//else if (agentId=="2") fv="tn=1-866-762-9482"; // retired
+	//  }
+	//  break;	  
+	//case "1186":
+	//  fv="tn=1-866-769-6823"; // retired
+	//  break;
+	//case "1191":
+	//  fv="tn=1-866-716-3388"; // retired
+	//  break;
+	case "1193":
+	  fv="tn=1-866-714-8232";
+	  break;  
+	//case "1195":
+	  //fv="tn=1-866-210-9280"; // retired
+	//  fv="tn=1-866-452-3801";
+	//  if (agentId!=null && agentId.length>0)
+	//  {
+	//	if (agentId=="2") fv="tn=1-866-452-3801";
+	//  }
+	//  break;  
+	case "1196":
+	  //fv="tn=1-866-714-8230"; // retired
+	  fv="tn=1-866-714-8226";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		//if (agentId=="1") fv="tn=1-866-714-8230"; // retired
+		if (agentId=="2") fv="tn=1-866-714-8226";
+	  }
+	  break;
+	case "1197":
+	  fv="tn=1-866-544-9547";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="2") fv="tn=1-866-544-9547";
+	  }
+	  break;  
+	case "1203":
+	  fv="tn=1-866-518-0958";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-866-518-0958";
+		else if (agentId=="2") fv="tn=1-866-657-6717";
+		else if (agentId=="3") fv="tn=1-866-618-2956";
+		//else if (agentId=="4") fv="tn=1-866-618-4186"; // retired
+	  }
+	  break;
+	case "1210":
+	  fv="tn=1-866-622-1408";
+	  break;
+	//case "1211":
+	//  fv="tn=1-866-601-7917"; // retired
+	//  break;
+	//case "1213":
+	//  fv="tn=1-866-601-7915"; // retired
+	//  break;
+	case "1215":
+	  fv="tn=1-866-596-3968";
+	  break;
+	case "1221":
+	  //fv="tn=1-866-565-3375"; // retired
+	  fv="tn=1-866-223-1810";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		//if (agentId=="1") fv="tn=1-866-565-3375"; // retired
+		if (agentId=="2") fv="tn=1-866-223-1810";
+	  }
+	  break;
+	//case "1222":
+	//  fv="tn=1-866-549-4804"; // retired
+	//  break;
+	case "1226":
+	  fv="tn=1-866-549-2150";
+	  break;
+	case "1228":
+	  fv="tn=1-866-544-9548";
+	  break;
+	//case "1231":
+	//  fv="tn=1-866-544-7637"; // retired
+	//  break;
+	case "1232":
+	  fv="tn=1-877-285-4295";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-877-285-4295";
+		else if (agentId=="2") fv="tn=1-866-250-7115";
+	  }
+	  break;
+	case "1233":
+	  fv="tn=1-866-544-8985";
+	  break;
+	case "1234":
+	  fv="tn=1-866-520-6947";
+	  break;
+	//case "1236":
+	//  fv="tn=1-866-518-9219"; // retired
+	//  break;  
+	case "1240":
+	  fv="tn=1-866-518-9217";
+	  break;
+	case "1245":
+	  fv="tn=1-866-518-0254";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-866-518-0254";
+		else if (agentId=="2") fv="tn=1-866-518-0255";
+	  }
+	  break;
+	//case "1247":
+	//  fv="tn=1-866-518-0253"; // retired
+	//  break;
+	//case "1250":
+	//  fv="tn=1-866-516-0948"; // retired
+	//  break;
+	//case "1267":
+	//  fv="tn=1-866-210-7144"; // retired
+	//  break;  
+	case "1269":
+	  fv="tn=1-866-210-5459";
+	  break;
+	case "1289":
+	  fv="tn=1-866-618-2956";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-866-618-2956";
+		else if (agentId=="2") fv="tn=1-866-210-9848";
+	  }
+	  break;  
+	default:
+	  fv="tn=1-866-518-0963";
+	}
+	
+	if (typeof dealerId === 'undefined' || dealerId===null || dealerId.length===0)
+	{
+		fv="tn=1-866-518-0963";
+		return fv;
+	}
+	
+	if (typeof agentId === 'undefined' || agentId===null || agentId.length===0)
+	{
+		agentId=null;
+	}
+	
+	if (dealerId!=null && dealerId.length>0)
+	{
+		fv+="&dealer=" + dealerId;
+	}
+	if (agentId!=null)
+	{
+		fv+="&agent=" + agentId;
+	}
+	
+	return fv;
+}
+
+function getBundleFlashVars()
+{
+	var fv="";
+	var cComwaveHPSignupID="";
+
+	cComwaveHPSignupID = getSignupIDFromCookieName('comwaveoveridesignupid');
+	if (cComwaveHPSignupID.length==0)
+	{
+		cComwaveHPSignupID = getSignupIDFromCookieName('comwavebundlesignupid');
+	}
+
+	/*
+	var allCookies = document.cookie;
+	var cPos = allCookies.indexOf("comwavebundlesignupid=");
+	if(cPos != -1)
+	{
+		var cdstart = cPos + 22;
+		var cdend = allCookies.indexOf(";", cdstart);
+		if(cdend == -1) cdend = allCookies.length;
+		var cookieContent = allCookies.substring(cdstart,cdend);
+		cookieContent = unescape(cookieContent);
+		var cdatestart = cookieContent.indexOf("&&&", 0);
+		var cdateend = cookieContent.length;
+		cComwaveHPSignupID = cookieContent.substring(0,cdatestart);
+		var cDateRef = cookieContent.substring(cdatestart +2,cdateend)
+	}
+	*/
+	
+	var prms=cComwaveHPSignupID.split("-");
+	var dealerId=null;
+	if (prms[0])
+	{
+		dealerId=prms[0];
+	}
+	var agentId=null;
+	if (prms[1])
+	{
+		agentId=prms[1];
+	}
+	
+	if (dealerId===null || dealerId.length===0)
+	{
+		fv="tn=1-866-769-9599"; // no results, default tn
+		return fv;
+	}
+	
+	switch (dealerId)
+	{
+	case "1170":
+      fv="tn=1-866-885-9928";
+      if (agentId!=null && agentId.length>0)
+      {
+      	if (agentId=="1") fv="tn=1-866-885-9928";
+        else if (agentId=="12") fv="tn=1-866-209-4074";
+        else if (agentId=="13") fv="tn=1-866-209-0113";
+   		else if (agentId=="33") fv="tn=1-866-695-3138";
+		else if (agentId=="34") fv="tn=1-866-565-3375";
+		else if (agentId=="35") fv="tn=1-866-518-0253";
+		else if (agentId=="36") fv="tn=1-866-716-3388";
+      }
+      break;
+    case "1179":
+	  fv="tn=1-866-898-0979";
+	  if (agentId!=null && agentId.length>0)
+	  {
+	  	if (agentId=="2") fv="tn=1-866-898-0979";
+		else if (agentId=="2") fv="tn=1-866-799-5440";
+	  }
+	  break;
+	case "1181":
+	  fv="tn=1-866-463-8057";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="2") fv="tn=1-866-463-8057";
+	  }
+	  break;
+	case "1221":
+	  fv="tn=1-866-223-1810";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="2") fv="tn=1-866-223-1810";
+	  }
+	  break;
+	case "1232":
+	  fv="tn=1-877-285-4295";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="1") fv="tn=1-877-285-4295";
+	  }
+	  break;
+	case "1289":
+	  fv="tn=1-866-210-9848";
+	  if (agentId!=null && agentId.length>0)
+	  {
+		if (agentId=="2") fv="tn=1-866-210-9848";
+	  }
+	  break;
+	default:
+	  fv="tn=1-866-769-9599"; // no results, default tn
+	}
+	
+	if (typeof dealerId === 'undefined' || dealerId===null || dealerId.length===0)
+	{
+		fv="tn=1-866-769-9599"; // no results, default tn
+		return fv;
+	}
+	
+	if (typeof agentId === 'undefined' || agentId===null || agentId.length===0)
+	{
+		agentId=null;
+	}
+	
+	if (dealerId!=null && dealerId.length>0)
+	{
+		fv+="&dealer=" + dealerId;
+	}
+	if (agentId!=null)
+	{
+		fv+="&agent=" + agentId;
+	}
+	
+	return fv;
+}
+
+function getParameterByName(name,qs)
+{
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(qs);
+  if(results == null)
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+
+function getHpTFN()
+{
+	var fv = getFlashVars();
+	var result = getParameterByName("tn",fv);
+	return result;
+}
+
+function getBundleTFN()
+{
+	var fv = getBundleFlashVars();
+	var result = getParameterByName("tn",fv);
+	return result;	
+}
+
+function getHpDealer()
+{
+	var fv = getFlashVars();
+	var result = getParameterByName("dealer",fv);
+	return result;
+}
+
+function getHpAgent()
+{
+	var fv = getFlashVars();
+	var result = getParameterByName("agent",fv);
+	return result;
+}
+
+function getHpDealerAgentPrependStr()
+{
+	var fv = getFlashVars();
+	var dealer = getParameterByName("dealer",fv);
+	var agent = getParameterByName("agent",fv);
+	var result = "";
+	if (dealer!=null && dealer.length>0)
+	{
+		result+="&d=" + dealer;
+	}
+	if (agent!=null && agent.length>0)
+	{
+		result+="&a=" + agent;
+	}
+	return result;
+}

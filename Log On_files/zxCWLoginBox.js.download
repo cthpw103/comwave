@@ -1,0 +1,144 @@
+/*
+* @author: Azim Zakhidov a.k.a. 3oxa
+* @email: azakhidov@gmail.com
+* @email: azim.zakhidov@cyberplex.com
+* @icq:   62472200
+*/
+var CWLoginBox, CWCountry;
+window.addEvent('domready',function(){
+    var zxCWLoginBoxOpt = { };
+    CWLoginBox = new zxCWLoginBox(zxCWLoginBoxOpt);
+    CWCountry = new zxCWCountry();
+});
+
+var zxCWLoginBox = new Class({
+
+    btn:null,
+    fields:null,
+    box:null,
+    state:true,
+    fxF:null,
+    fxB:null,
+
+    options : {
+        btn:'closeButton',
+        label:['Close','Open'],
+        fields:'accountBoxFields',
+        box:'accountBoxOpen',
+        top:[0,-80],
+        show_duration:500,
+        transition:Fx.Transitions.linear
+    },
+
+    setOptions:function(options){
+        this.options = Object.extend(this.options, options || {} );
+    },
+
+    initialize:function(options){
+        this.setOptions(options);
+        this.btn    = $(this.options.btn);
+        this.fields = $(this.options.fields);
+        this.box    = $(this.options.box);
+        if (!this.btn||!this.fields||!this.box) return false;
+        this.state = (this.box.getTop()==0);
+        this.btn.addEvent('click',this.toggleBox.bind(this));
+        this.btn.setHTML((this.state)?this.options.label[0]:this.options.label[1]);
+
+        this.fxF = new Fx.Styles(this.fields, {
+            wait:true,
+            duration: this.options.show_duration,
+            transition: this.options.transition,
+            onComplete: this.CompleteToggle.bind(this)
+        });
+
+        this.fxB = new Fx.Styles(this.box, {
+            wait:true,
+            duration: this.options.show_duration,
+            transition: this.options.transition
+        });
+    },
+
+    toggleBox:function(){
+        if (this.state){
+            var opt = {'top':[this.options.top[0],this.options.top[1]]};//,'opacity':[1,0]};
+            this.btn.setHTML(this.options.label[1]);
+        }else{
+            var opt = {'top':[this.options.top[1],this.options.top[0]]};//,'opacity':[0,1]};
+            this.btn.setHTML(this.options.label[0]);
+        }
+
+        this.fxF.start(opt);
+        this.fxB.start(opt);
+    },
+
+    CompleteToggle:function(){
+        this.state = (this.box.getTop()==0);
+    }
+});
+
+var zxCWCountry = new Class({
+
+    fld:null,
+    country:{},
+
+    options : {
+        countryBox:'countrySelector',
+        country:{
+            ca:{
+                id:'countryCA',
+                value:'ca',
+                on:'newskin/_common/images/select-country-can-on.gif',
+                off: 'newskin/_common/images/select-country-can-off.gif'
+            },
+            us:{
+                id:'countryUS',
+                value:'us',
+                on:'newskin/_common/images/select-country-us-on.gif',
+                off: 'newskin/_common/images/select-country-us-off.gif'
+            }
+        },
+        fldName:'countrySelect'
+    },
+
+    setOptions:function(options){
+        this.options = Object.extend(this.options, options || {} );
+    },
+
+    initialize:function(options){
+        this.setOptions(options);
+
+        var div = $(this.options.countryBox);
+        if (!div) return false;
+        this.fld = ($(this.options.fldName) || new Element('input').setProperties({'type':'hidden','id':this.options.fldName,'name':this.options.fldName}).injectInside(div));
+
+        var on = '';
+        $each(this.options.country,function(country,key){
+            if ( $(country.id) ){
+                this.country[key]=$(country.id);
+                if (this.country[key].getProperty('src') == country.on){
+                    if (on==''){
+                        on = country.value;
+                    }else{
+                        this.country[key].setProperty('src', country.off);
+                    }
+                }
+                this.country[key].addEvent('click', this.countryChange.pass([key],this));
+            }
+        },this);
+        if (on!='') this.fld.value = on;
+    },
+
+    countryChange:function(sel){
+        if (this.country[sel]){
+            $each(this.country,function(img,key){
+                var c = this.options.country[key];
+                if (key==sel){
+                    img.setProperty('src',c.on);
+                    this.fld.value=c.value;
+                }else{
+                    img.setProperty('src',c.off);
+                }
+            },this);
+        }
+    }
+});

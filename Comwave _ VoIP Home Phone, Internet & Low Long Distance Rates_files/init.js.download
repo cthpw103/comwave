@@ -1,0 +1,790 @@
+$(document).ready(function() {
+
+	if (getURLParameter('showcountry')!='null')
+	{
+		$.fancybox({
+			'hideOnContentClick': true,
+			'transitionIn':'fade',
+			'transitionOut':'fade',
+			'padding':20,
+			'overlayColor': '#000',
+			'titlePosition': 'over',
+			'showNavArrows' : false,
+			'overlayOpacity': 0.8,
+			'autoDimensions':true,
+			'autoScale':true,
+			'scrolling':'no',
+			'centerOnScroll':true,
+			href: $('a.fancybox:eq(0)').attr('href')
+		});
+	}
+	
+	$('input,select').not('#search').keypress(function(e){
+		if ( e.which == 13 )
+		{
+			return false;
+		}
+	});
+
+	// Html 5 placeholder text fix
+	$("input").each(
+		function(){
+			if($(this).val()=="" && $(this).attr("placeholder")!=""){
+			$(this).val($(this).attr("placeholder"));
+			$(this).focus(function(){
+			if($(this).val()==$(this).attr("placeholder")) $(this).val("");
+			});
+			$(this).blur(function(){
+			if($(this).val()=="") $(this).val($(this).attr("placeholder"));
+			});
+		}
+	});
+	
+	
+	$('#search').keyup(function(){
+		if( $(this).val() == '' || $(this).val() == 'Search'){
+			$('#searchSubmit').fadeOut();
+		} else {
+			$('#searchSubmit').fadeIn();
+		}	
+	});
+
+
+	// Primary navigation: keep the parent tab of current sub-nav being hovered over on active state
+	$('#primary li').hover(function(){
+		// add specific class and show subnav
+		$(this).find('a').addClass('active');
+		//$('a',this).addClass('active');
+		$(this).find('.first_level').show();
+		//$('.first_level',this).show();
+	},function(){
+		$(this).find('a').removeClass('active');
+		//$(this).find('.first_level').hide();
+		$(this).find('.first_level').css('left','-9999');
+	});
+	
+
+	//  tabs
+	var hash = window.location.hash;
+	var bDoScroll=false;
+	var scrollToId='';
+	if (hash.indexOf('-')!=-1)
+	{
+		bDoScroll=true;
+		scrollToId = hash.substring(hash.indexOf('-')+1);
+		hash = hash.substring(0,hash.indexOf('-'));
+	}
+	if(hash) {
+		$(hash).show();
+		$('.tabNavigation ul li a[rel='+ hash.slice(1) +']').parent().addClass("tab_on");
+	} else if ($('.tabNavigation ul li a.default').length>0) {
+		var tabName = $('.tabNavigation ul li a.default').attr('rel');
+		$('#' + tabName).show();
+		$('.tabNavigation ul li a.default').parent().addClass("tab_on");
+	} else {
+		$('.tab:first').show();
+		$('.tabNavigation ul li:first').addClass("tab_on");
+	}
+	if (bDoScroll)
+	{
+		var scrollToIdTop = $('#'+scrollToId).offset().top;
+		window.bDoScroll = true;
+		window.scrollToIdTop = scrollToIdTop;
+	}
+	
+	// On click event
+	$('.tabNavigation ul li a').click(function() {
+		var activeTab = $(this).attr("rel");
+		$('.tabNavigation ul li').removeClass("tab_on");
+		$(this).parent().addClass("tab_on");
+		$('.tab').hide();
+		$("#"+activeTab).fadeIn();
+		return false;
+	});
+	
+	// Accordion show-hide
+	$('.hide').hide();
+
+	/* turning off the automatic openning of the first accordian as per marketing request (Karen) on Sept 3, 2015
+	if (window.location.href.indexOf('contact-us')==-1)
+	{
+		$('.accordion:first').each(function(){
+			$('.hide:first', this).show();
+			$('h3:first', this).addClass("close");
+		});
+	}
+	*/
+
+	$('.accordion h3').click(function(){
+		$(this).next(".hide").slideToggle("slow").siblings("hide:visible").slideUp("slow");
+		$(this).toggleClass("close");
+		return false;	 
+	});
+	
+	$('.accordion h3').attr('tabindex','0').keyup(function(event){
+	    if(event.keyCode == 13){
+	        $(this).click();
+	    }
+	});
+	
+	
+	// installation steps buttons
+	$('.stepTigger').click(function(){
+		$('#stepOne').hide();
+		$('#stepTwo').show();
+		return false;
+	});
+	
+	function contactProdTypeChangeEn()
+	{
+		var prodtype=$('#contactprodtype-en').val().toLowerCase();
+		var $issuetypeSelect = $('#contactissuetype-en');
+		switch(prodtype)
+		{
+		case "home phone":
+		  $issuetypeSelect.html( $('#contactissuetypehp-en').html() );
+		  break;
+		case "internet":
+		  $issuetypeSelect.html( $('#contactissuetypeint-en').html() );
+		  break;
+		case "long distance":
+		  $issuetypeSelect.html( $('#contactissuetypeld-en').html() );
+		  break;  
+		default:
+		  $issuetypeSelect.html( $('#contactissuetypeempty-en').html() );
+		  break;
+		}
+	}
+	if ($('#contactprodtype-en').length>0) {
+		$('#contactprodtype-en').change(function(){ contactProdTypeChangeEn(); });
+		contactProdTypeChangeEn();
+	}
+	
+	
+	function contactIssueTypeChangeEn()
+	{
+		var $tohand = $('#tohand');
+		var handeler = $('#contactissuetype-en').find(":selected").data('handeler');
+		if (handeler) {
+			handeler = handeler.toLowerCase();
+		}
+		else
+		{
+			$tohand.val('');
+			return;
+		}
+		
+		switch(handeler)
+		{
+		case "ts":
+		  $tohand.val(base64_decode('c3VwcG9ydEBjb213YXZlLm5ldA=='));
+		  break;
+		case "cs":
+		  $tohand.val(base64_decode('Y3VzdG9tZXJjYXJlQGVhc3ljdXN0b21lcmNhcmUuY29t'));
+		  break;
+		case "mb":
+		  $tohand.val(base64_decode('bW9iaWxlQGNvbXdhdmUubmV0'));
+		  break;  
+		default:
+		}
+		
+	}
+	if ($('#contactissuetype-en').length>0)
+	{
+		$('#contactissuetype-en').change(function(){ contactIssueTypeChangeEn(); });
+		contactIssueTypeChangeEn();
+	}
+	
+	// validate contact form on keyup and submit
+	$('#contact').validate({
+		rules: {
+			//firstname: {required: true},
+			//lastname: {required: true},
+			"interaction[email]": {required: true, email: true},
+			//phone: {required: true},
+			"email[body]": {required: true}
+		},
+			
+		submitHandler: function(form) {
+		
+			/*$.ajax({
+			  type:'POST',
+			  data: $(form).serialize().replace(/'/g, '%60'),
+			  //url: SITE_ROOT + "functions/email.php",
+			  //url: "https://www.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
+			  url: "https://comwave.desk.com/customer/widget/emails",
+			  beforeSend: function ( xhr ) {
+			  	alert ('got here beforeSend');
+				$("#contact").hide();
+				//var ifr="<iframe src='" + this.url + "' height=1 width=1></iframe>";
+				if ($(form).hasClass("french"))
+				{
+					$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>"  + ifr).show();
+				}
+				else
+				{
+					$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>" + ifr).show();
+				}
+				//return false;
+			  },
+			  success: function(data){
+			  	alert ('got here success');
+				$("#contact").hide();
+				//var ifr="<iframe src='" + this.url + "' height=1 width=1></iframe>";
+				//$('#thankyou').html(data).show();
+				$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>" + ifr).show();
+				$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>" + ifr).show();
+			  }
+			});*/
+			var contactusurl = 'https://comwave.desk.com/customer/widget/emails';
+			$('#contact').attr('action',contactusurl);
+
+			$("#contact").hide();
+			$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>").show();
+			$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>").show();
+
+			form.submit();
+			return true;
+		}
+
+	});
+	
+	// validate dispute form on keyup and submit
+	$('#disputeform').validate({
+		rules: {
+			firstname: {required: true},
+			lastname: {required: true},
+			acctnum: {required: true},
+			email: {required: true, email: true},
+			date: {required: true},
+			desired: {required: true},
+			describe: {required: true}
+		},
+			
+		submitHandler: function(form) {
+
+			$.ajax({
+			  type:'POST',
+			  data: $(form).serialize(),
+			  //url: SITE_ROOT + "functions/email.php",
+			  url: SITE_ROOT + "functions/emaildisputeform377002.php",
+			  //url: "https://www.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
+			  beforeSend: function ( xhr ) {
+				$("#disputeform").hide();
+				//var ifr="<iframe src='" + this.url + "' height=1 width=1></iframe>";
+				var ifr='';
+				if ($(form).hasClass("french"))
+				{
+					$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>"  + ifr).show();
+				}
+				else
+				{
+					$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>" + ifr).show();
+				}
+				//return false;
+			  },
+			  success: function(data){
+				$("#disputeform").hide();
+				//var ifr="<iframe src='" + this.url + "' height=1 width=1></iframe>";
+				var ifr='';
+				$('#thankyoudispute').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>" + ifr).show();
+				$('#thankyoudisputefr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>" + ifr).show();
+			  }
+			});
+			return false;
+
+		}
+
+	});
+
+	// method for phone number
+	$.validator.addMethod("phoneUS", function(phone_number, element) {
+		phone_number = phone_number.replace(/\s+/g, ""); 
+		return this.optional(element) || phone_number.length > 9 &&
+			phone_number.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/);
+	}, "Please specify a valid phone number");
+	
+	// validate leads generation form on keyup and submit
+	//JCgnI2xlYWRHZW4nKS52YWxpZGF0ZSh7DQoJCXJ1bGVzOiB7DQoJCQlmbmFtZToge3JlcXVpcmVkOiB0cnVlfSwNCgkJCWxuYW1lOiB7cmVxdWlyZWQ6IHRydWV9LA0KCQkJZW1haWw6IHtyZXF1aXJlZDogdHJ1ZSwgZW1haWw6IHRydWV9LA0KCQkJcGhvbmU6IHtyZXF1aXJlZDogdHJ1ZSwgcGhvbmVVUzp0cnVlfSwNCgkJCSdwcm9kdWN0W10nOiB7cmVxdWlyZWQ6IHRydWUsIG1pbmxlbmd0aDogMX0sDQoJCQlvdGhlckludGVyZXN0OiB7DQoJCQkJcmVxdWlyZWQ6IHsgICAgICAgDQoJCQkJICBkZXBlbmRzOiBmdW5jdGlvbihlbGVtZW50KSB7DQoJCQkJCXJldHVybiAkKCIjT3RoZXIiKS5pcygnOmNoZWNrZWQnKTsNCgkJCQkgIH0NCgkJCQl9DQoJCQl9DQoJCX0sDQoJCQ0KCQltZXNzYWdlczp7DQoJCQlmbmFtZTp7cmVxdWlyZWQ6J1lvdSBtdXN0IGVudGVyIGEgZmlyc3QgbmFtZSd9LA0KCQkJbG5hbWU6e3JlcXVpcmVkOidZb3UgbXVzdCBlbnRlciBhIGxhc3QgbmFtZSd9LCANCgkJCWVtYWlsOntyZXF1aXJlZDonWW91IG11c3QgZW50ZXIgYSB2YWxpZCBlbWFpbCd9LA0KCQkJcGhvbmU6e3JlcXVpcmVkOidZb3UgbXVzdCBlbnRlciBhIHZhbGlkIHBob25lIG51bWJlcid9LA0KCQkJJ3Byb2R1Y3RbXSc6e3JlcXVpcmVkOidQbGVhc2Ugc2VsZWN0IGF0IGxlYXN0IG9uZSBwcm9kdWN0J30NCgkJfSwNCgkJDQoJCSAgZXJyb3JQbGFjZW1lbnQ6IGZ1bmN0aW9uKGVycm9yLCBlbGVtZW50KSB7DQoJCQkgaWYgKGVsZW1lbnQuYXR0cigibmFtZSIpID09ICJwcm9kdWN0W10iICkNCgkJCSAgIGVycm9yLmluc2VydEJlZm9yZSgiI0RJRCIpLmNzcygnd2lkdGgnLCcxMDAlJyk7DQoJCQkgZWxzZQ0KCQkJICAgZXJyb3IuaW5zZXJ0QWZ0ZXIoZWxlbWVudCk7DQoJCX0sCQ0KCQlzdWJtaXRIYW5kbGVyOiBmdW5jdGlvbihmb3JtKSB7DQoNCgkJCSQuYWpheCh7DQoJCQkgIHR5cGU6J1BPU1QnLA0KCQkJICBkYXRhOiAkKGZvcm0pLnNlcmlhbGl6ZSgpLA0KCQkJICB1cmw6IFNJVEVfUk9PVCArICJmdW5jdGlvbnMvbGVhZC1nZW5lcmF0b3IucGhwIiwNCgkJCSAgc3VjY2VzczogZnVuY3Rpb24oZGF0YSl7DQoJCQkJJCgiI2xlYWRHZW4iKS5oaWRlKCk7DQoJCQkJJCgnI3RoYW5reW91JykuaHRtbChkYXRhKS5zaG93KCk7DQoJCQkgIH0NCgkJCX0pOw0KCQkNCgkJfQ0KDQoJfSk7
+
+	//	CXZhciB3aG9sZXNhbGVsZWFkR2VuUGl4ZWxzZW50PWZhbHNlOw0KCSQoJyNsZWFkR2VuJykudmFsaWRhdGUoew0KCQlydWxlczogew0KCQkJZW1haWw6IHtyZXF1aXJlZDogdHJ1ZSwgZW1haWw6IHRydWV9LA0KCQkJcGhvbmU6IHtyZXF1aXJlZDogdHJ1ZSwgcGhvbmVVUzp0cnVlfQ0KCQkJLy8ncHJvZHVjdFtdJzoge3JlcXVpcmVkOiB0cnVlLCBtaW5sZW5ndGg6IDF9LA0KCQkJLy9vdGhlckludGVyZXN0OiB7DQoJCQkJLy9yZXF1aXJlZDogeyAgICAgICANCgkJCQkgIC8vZGVwZW5kczogZnVuY3Rpb24oZWxlbWVudCkgew0KCQkJCQkvL3JldHVybiAkKCIjT3RoZXIiKS5pcygnOmNoZWNrZWQnKTsNCgkJCQkgIC8vfQ0KCQkJCS8vfQ0KCQkJLy99DQoJCX0sDQoJCQ0KCQltZXNzYWdlczp7DQoJCQkvL2ZuYW1lOntyZXF1aXJlZDonWW91IG11c3QgZW50ZXIgYSBmaXJzdCBuYW1lJ30sDQoJCQkvL2xuYW1lOntyZXF1aXJlZDonWW91IG11c3QgZW50ZXIgYSBsYXN0IG5hbWUnfSwgDQoJCQllbWFpbDp7cmVxdWlyZWQ6J1lvdSBtdXN0IGVudGVyIGEgdmFsaWQgZW1haWwnfSwNCgkJCXBob25lOntyZXF1aXJlZDonWW91IG11c3QgZW50ZXIgYSB2YWxpZCBwaG9uZSBudW1iZXInfQ0KCQkJLy8ncHJvZHVjdFtdJzp7cmVxdWlyZWQ6J1BsZWFzZSBzZWxlY3QgYXQgbGVhc3Qgb25lIHByb2R1Y3QnfQ0KCQl9LA0KCQkNCgkJICBlcnJvclBsYWNlbWVudDogZnVuY3Rpb24oZXJyb3IsIGVsZW1lbnQpIHsNCgkJCSBpZiAoZWxlbWVudC5hdHRyKCJuYW1lIikgPT0gInByb2R1Y3RbXSIgKQ0KCQkJICAgZXJyb3IuaW5zZXJ0QmVmb3JlKCIjRElEIikuY3NzKCd3aWR0aCcsJzEwMCUnKTsNCgkJCSBlbHNlDQoJCQkgICBlcnJvci5pbnNlcnRBZnRlcihlbGVtZW50KTsNCgkJfSwJDQoJCXN1Ym1pdEhhbmRsZXI6IGZ1bmN0aW9uKGZvcm0pIHsNCg0KCQkJJC5hamF4KHsNCgkJCSAgdHlwZTonR0VUJywNCgkJCSAgZGF0YTogJChmb3JtKS5zZXJpYWxpemUoKSwNCgkJCSAgdXJsOiAiaHR0cHM6Ly93d3cuc2FsZXNmb3JjZS5jb20vc2VydmxldC9zZXJ2bGV0LldlYlRvQ2FzZT9lbmNvZGluZz1VVEYtOCIsDQoJCQkgIGJlZm9yZVNlbmQ6IGZ1bmN0aW9uICggeGhyICkgew0KCQkJCSQoIiNsZWFkR2VuIikuaGlkZSgpOw0KCQkJCXZhciBwaXhlbD0iIjsNCgkJCQlpZiAoIXdob2xlc2FsZWxlYWRHZW5QaXhlbHNlbnQpDQoJCQkJew0KCQkJCQl3aG9sZXNhbGVsZWFkR2VuUGl4ZWxzZW50PXRydWU7DQoJCQkJCXBpeGVsPSc8aWZyYW1lIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHNyYz0iL3BpeGVscy9sZWFkZ2VucGl4ZWwuaHRtbCIgPjwvaWZyYW1lPic7DQoJCQkJfQ0KCQkJCXZhciBpZnI9IjxpZnJhbWUgc3JjPSciICsgdGhpcy51cmwgKyAiJyBoZWlnaHQ9MSB3aWR0aD0xPjwvaWZyYW1lPiI7DQoJCQkJJCgnI3RoYW5reW91JykuaHRtbCgiPGJyLz48aDI+VGhhbmsgeW91PC9oMj48YnIvPjxkaXY+WW91ciBtZXNzYWdlIGhhcyBiZWVuIGRlbGl2ZXJlZC48L2Rpdj4iICsgaWZyICsgcGl4ZWwpLnNob3coKTsNCgkJCQkkKCcjdGhhbmt5b3VmcicpLmh0bWwoIjxici8+PGgyPk1lcmNpPC9oMj48YnIvPjxkaXY+Vm90cmUgbWVzc2FnZSBhIGJpZW4gJmVhY3V0ZTt0JmVhY3V0ZTsgbGl2ciZlYWN1dGU7LjwvZGl2PiIgKyBpZnIgKyBwaXhlbCkuc2hvdygpOw0KCQkJCXJldHVybiBmYWxzZTsNCgkJCQkNCg0KCQkJICB9LA0KCQkJICBzdWNjZXNzOiBmdW5jdGlvbihkYXRhKXsNCgkJCQkkKCIjbGVhZEdlbiIpLmhpZGUoKTsNCgkJCQkvLyQoJyN0aGFua3lvdScpLmh0bWwoZGF0YSkuc2hvdygpOw0KCQkJCXZhciBwaXhlbD0iIjsNCgkJCQlpZiAoIXdob2xlc2FsZWxlYWRHZW5QaXhlbHNlbnQpDQoJCQkJew0KCQkJCQl3aG9sZXNhbGVsZWFkR2VuUGl4ZWxzZW50PXRydWU7DQoJCQkJCXBpeGVsPSc8aWZyYW1lIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHNyYz0iL3BpeGVscy9sZWFkZ2VucGl4ZWwuaHRtbCIgPjwvaWZyYW1lPic7DQoJCQkJfQ0KCQkJCXZhciBpZnI9IjxpZnJhbWUgc3JjPSciICsgdGhpcy51cmwgKyAiJyBoZWlnaHQ9MSB3aWR0aD0xPjwvaWZyYW1lPiI7DQoJCQkJJCgnI3RoYW5reW91JykuaHRtbCgiPGJyLz48aDI+VGhhbmsgeW91PC9oMj48YnIvPjxkaXY+WW91ciBtZXNzYWdlIGhhcyBiZWVuIGRlbGl2ZXJlZC48L2Rpdj4iICsgaWZyICsgcGl4ZWwpLnNob3coKTsNCgkJCQkkKCcjdGhhbmt5b3VmcicpLmh0bWwoIjxici8+PGgyPk1lcmNpPC9oMj48YnIvPjxkaXY+Vm90cmUgbWVzc2FnZSBhIGJpZW4gJmVhY3V0ZTt0JmVhY3V0ZTsgbGl2ciZlYWN1dGU7LjwvZGl2PiIgKyBpZnIgKyBwaXhlbCkuc2hvdygpOw0KCQkJICB9DQoJCQl9KTsNCgkJDQoJCX0NCg0KCX0pOw==
+	
+		$('#leadGen').validate({
+		rules: {
+			email1: {required: true, email: true},
+			phone_work: {required: true, phoneUS:true}
+		},
+		
+		messages:{
+			first_name:{required:'You must enter a first name'},
+			last_name:{required:'You must enter a last name'},
+			title:{required:'You must enter a title'},	
+			email1:{required:'You must enter a valid email'},
+			account_name:{required:'You must enter a company'},
+			primary_address_city:{required:'You must enter a city'},
+			phone_work:{required:'You must enter a valid phone number'}
+			//'product[]':{required:'Please select at least one product'}
+		},
+		
+		  errorPlacement: function(error, element) {
+			 if (element.attr("name") == "product[]" )
+			   error.insertBefore("#DID").css('width','100%');
+			 else
+			   error.insertAfter(element);
+		},	
+		submitHandler: function(form) {
+			var pixel='<iframe width="1" height="1" src="/pixels/leadgenpixel.html" ></iframe>';
+			$('#thankyouone').html("<br/><h2>Thank you</h2><br/><div style='width:510px;'>Your inquiry is being assigned to a representative who will contact you today (Mon-Fri 9am-5pm EST) to discuss your needs.<br/><br/>Comwave Business.</div>" + pixel).show();
+			$('#thankyoufrone').html("<br/><h2>Merci</h2><br/><div>Votre demande est confi&#233; &#224; un repr&#233;sentant qui prendra contact avec vous aujourd'hui (lundi au vendredi 9 heures-17 heures HNE) pour discuter de vos besoins.<br/><br/>Comwave Business.</div>" + pixel).show();
+			$('#wholesaleformcontainerone').hide();
+			form.submit();
+		}
+
+	});
+	
+		$('#leadGen.two').validate({
+		rules: {
+			email1: {required: true, email: true},
+			phone_work: {required: true, phoneUS:true}
+		},
+		
+		messages:{
+			first_name:{required:'You must enter a first name'},
+			last_name:{required:'You must enter a last name'},
+			title:{required:'You must enter a title'},	
+			email1:{required:'You must enter a valid email'},
+			account_name:{required:'You must enter a company'},
+			primary_address_city:{required:'You must enter a city'},
+			phone_work:{required:'You must enter a valid phone number'}
+			//'product[]':{required:'Please select at least one product'}
+		},
+		
+		  errorPlacement: function(error, element) {
+			 if (element.attr("name") == "product[]" )
+			   error.insertBefore("#DID").css('width','100%');
+			 else
+			   error.insertAfter(element);
+		},	
+		submitHandler: function(form) {
+			var pixel='<iframe width="1" height="1" src="/pixels/leadgenpixel.html" ></iframe>';
+			$('#thankyoutwo').html("<br/><h2>Thank you</h2><br/><div style='width:510px;'>Your inquiry is being assigned to a representative who will contact you today (Mon-Fri 9am-5pm EST) to discuss your needs.<br/><br/>Comwave Business.</div>" + pixel).show();
+			$('#thankyoufrtwo').html("<br/><h2>Merci</h2><br/><div>Votre demande est confi&#233; &#224; un repr&#233;sentant qui prendra contact avec vous aujourd'hui (lundi au vendredi 9 heures-17 heures HNE) pour discuter de vos besoins.<br/><br/>Comwave Business.</div>" + pixel).show();
+			$('#wholesaleformcontainertwo').hide();
+			form.submit();
+		}
+
+	});	
+	
+	$('#charityGen').validate({
+		rules: {
+			email1: {required: true, email: true},
+			ld_nuofusersphones_c: {required: true, number: true},
+			website: {url: true}
+		},
+		
+		messages:{
+			first_name:{required:'Please enter a first name'},
+			last_name:{required:'Please enter a last name'},
+			ld_nuofusersphones_c:{required:'Please enter the number of staff'},	
+			email1:{required:'Please enter a valid email'},
+			account_name:{required:'Please enter your organization name'},
+			phone_work:{required:'Please enter a valid phone number'}
+			//'product[]':{required:'Please select at least one product'}
+		},
+		
+		  errorPlacement: function(error, element) {
+			 if (element.attr("name") == "product[]" )
+			   error.insertBefore("#DID").css('width','100%');
+			 else
+			   error.insertAfter(element);
+		},	
+		submitHandler: function(form) {
+			var pixel='<iframe width="1" height="1" src="/pixels/pbxleadgenpixel.html" ></iframe>';
+			$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your information is being processed and will be forwarded to our approval committee.&nbsp;&nbsp;You will hear from a Comwave representative with business 48 hours.<br/><br/>Comwave Business.</div>" + pixel).show();
+			$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Vos informations sont en cours de traitement et seront transmises &#224; notre comit&#233; d'approbation. Vous entendrez un repr&#233;sentant Comwave avec les entreprises 48 heures.<br/><br/>Comwave Business.</div>" + pixel).show();
+			$('#charityGen').hide();
+			$('#applynowlabel').css('visibility','hidden');
+			form.submit();
+			
+			
+		}
+
+	});
+	$('#leadGenpbx.one').validate({
+		rules: {
+			email1: {required: true, email: true},
+			phone_work: {required: true, phoneUS:true}
+			//'product[]': {required: true, minlength: 1},
+			//otherInterest: {
+				//required: {       
+				  //depends: function(element) {
+					//return $("#Other").is(':checked');
+				  //}
+				//}
+			//}
+		},
+		
+		messages:{
+			first_name:{required:'You must enter a first name'},
+			last_name:{required:'You must enter a last name'}, 
+			email1:{required:'You must enter a valid email'},
+			account_name:{required:'You must enter a company'},
+			primary_address_city:{required:'You must enter a city'},
+			primary_address_state:{required:'You must enter a prov/state'},
+			phone_work:{required:'You must enter a valid phone number'}
+			//'product[]':{required:'Please select at least one product'}
+		},
+		
+		  errorPlacement: function(error, element) {
+			 if (element.attr("name") == "product[]" )
+			   error.insertBefore("#DID").css('width','100%');
+			 else
+			   error.insertAfter(element);
+		},	
+		submitHandler: function(form) {
+			/*
+			$.ajax({
+			  type:'GET',
+			  data: $(form).serialize(),
+			  url: "https://www.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
+			  beforeSend: function ( xhr ) {
+				$("#leadGen").hide();
+				$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>").show();
+				$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>").show();
+			  },
+			  success: function(data){
+				$("#leadGen").hide();
+				//$('#thankyou').html(data).show();
+				$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>").show();
+				$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>").show();
+			  }
+			});
+			*/
+			addPromoCodeToWholesaleNotesIfPresent(form);
+			var pixel='<iframe width="1" height="1" src="/pixels/pbxleadgenpixel.html" ></iframe>';
+			$("#leadGenpbx.one, #reqcalltopone").hide();
+			$('#thankyouone').html("<br/><h2>Thank you</h2><br/><div style='width:510px;'>Your inquiry is being assigned to a representative who will contact you today (Mon-Fri 9am-5pm EST) to discuss your needs.<br/><br/>Comwave Business.</div>" + pixel).show();
+			$('#thankyoufrone').html("<br/><h2>Merci</h2><br/><div>Votre demande est confi&#233; &#224; un repr&#233;sentant qui prendra contact avec vous aujourd'hui (lundi au vendredi 9 heures-17 heures HNE) pour discuter de vos besoins.<br/><br/>Comwave Business.</div>" + pixel).show();
+			form.submit();
+		}
+
+	});
+	
+	$('#leadGenpbx.two').validate({
+		rules: {
+			email1: {required: true, email: true},
+			phone_work: {required: true, phoneUS:true}
+			//'product[]': {required: true, minlength: 1},
+			//otherInterest: {
+				//required: {       
+				  //depends: function(element) {
+					//return $("#Other").is(':checked');
+				  //}
+				//}
+			//}
+		},
+		
+		messages:{
+			first_name:{required:'You must enter a first name'},
+			last_name:{required:'You must enter a last name'}, 
+			email1:{required:'You must enter a valid email'},
+			account_name:{required:'You must enter a company'},
+			primary_address_city:{required:'You must enter a city'},
+			primary_address_state:{required:'You must enter a prov/state'},
+			phone_work:{required:'You must enter a valid phone number'}
+			//'product[]':{required:'Please select at least one product'}
+		},
+		
+		  errorPlacement: function(error, element) {
+			 if (element.attr("name") == "product[]" )
+			   error.insertBefore("#DID").css('width','100%');
+			 else
+			   error.insertAfter(element);
+		},	
+		submitHandler: function(form) {
+			/*
+			$.ajax({
+			  type:'GET',
+			  data: $(form).serialize(),
+			  url: "https://www.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
+			  beforeSend: function ( xhr ) {
+				$("#leadGen").hide();
+				$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>").show();
+				$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>").show();
+			  },
+			  success: function(data){
+				$("#leadGen").hide();
+				//$('#thankyou').html(data).show();
+				$('#thankyou').html("<br/><h2>Thank you</h2><br/><div>Your message has been delivered.</div>").show();
+				$('#thankyoufr').html("<br/><h2>Merci</h2><br/><div>Votre message a bien &eacute;t&eacute; livr&eacute;.</div>").show();
+			  }
+			});
+			*/
+			addPromoCodeToWholesaleNotesIfPresent(form);
+			var pixel='<iframe width="1" height="1" src="/pixels/pbxleadgenpixel.html" ></iframe>';
+			$("#leadGenpbx.two, #reqcalltoptwo").hide();
+			$('#thankyoutwo').html("<br/><h2>Thank you</h2><br/><div style='width:510px;'>Your inquiry is being assigned to a representative who will contact you today (Mon-Fri 9am-5pm EST) to discuss your needs.<br/><br/>Comwave Business.</div>" + pixel).show();
+			$('#thankyoufrtwo').html("<br/><h2>Merci</h2><br/><div>Votre demande est confi&#233; &#224; un repr&#233;sentant qui prendra contact avec vous aujourd'hui (lundi au vendredi 9 heures-17 heures HNE) pour discuter de vos besoins.<br/><br/>Comwave Business.</div>" + pixel).show();
+			form.submit();
+		}
+
+	});
+
+	function addPromoCodeToWholesaleNotesIfPresent(form)
+	{
+		// check if there is a promo code, if so add it to the description
+		var $promoCode = $(form).find('input.pbxpromocode');
+		var $wholesaleNotes = $(form).find('textarea[name="ld_wholesalenotes_c"]');
+		if ($promoCode.length>0 && $.trim($promoCode.val()).length>0 && $wholesaleNotes.length>0)
+		{
+			var newDescriptionText='';
+			newDescriptionText+='Promo Code: ' + $promoCode.val() + '\n';
+			newDescriptionText+='Notes: ' + $wholesaleNotes.val();
+			$wholesaleNotes.val(newDescriptionText);
+		}
+	}	
+	
+	// Toggle checkboxes
+	$('input[name="product[]"]').click(function(){
+		$('#Other').removeAttr('checked');
+	});
+	
+	$('#Other').click(function(){
+		$('input[name="product[]"]').removeAttr('checked');
+		$(this).attr('checked','checked');
+	});
+	
+	$("a.fancybox").click(function(){
+		var theInlineContentSelector = $(this).attr('href');
+		var theiFrame = $(theInlineContentSelector + " iframe");
+		if ( $(theiFrame).attr('data-src') )
+		{
+			$(theiFrame).attr('src',$(theiFrame).attr('data-src'));
+		}
+	});
+	
+	$('#fancybox-close').click(function(){
+		if ($('#fancybox-wrap').find('iframe').attr('data-src'))
+		{
+			$('#fancybox-wrap').find('iframe').attr('src','');
+		}
+	});
+	
+	// Fancybox	
+	$("a.fancybox").fancybox({
+		'hideOnContentClick': true,
+		'transitionIn':'fade',
+		'transitionOut':'fade',
+		'padding':20,
+		'overlayColor': '#000',
+		'titlePosition': 'over',
+		'showNavArrows' : false,
+		'overlayOpacity': 0.8,
+		'autoDimensions':true,
+		'autoScale':true,
+		'scrolling':'no',
+		'centerOnScroll':true
+	});
+	
+	$("a.fancyboxform").fancybox({
+		'hideOnContentClick': false,
+		'transitionIn':'fade',
+		'transitionOut':'fade',
+		'padding':20,
+		'overlayColor': '#000',
+		'titlePosition': 'over',
+		'showNavArrows' : false,
+		'overlayOpacity': 0.8,
+		'autoDimensions':true,
+		'autoScale':false,
+		'scrolling':'no',
+		'onStart':fancyboxformstart,
+		'onClosed':fancyboxformend,
+		'centerOnScroll':false
+	});
+	
+	
+	// highlight search terms
+	if(SEARCHVALUE != ""){
+		jQuery.fn.extend({
+		  highlight: function(search, insensitive){
+			var regex = new RegExp("(<[^>]*>)|(\\b"+ search.replace(/([-.*+?^${}()|[\]\/\\])/g,"\\$1") +")", insensitive ? "ig" : "g");
+			return this.html(this.html().replace(regex, function(a, b, c){
+			  return (a.charAt(0) == "<") ? a : '<strong style="color:#F80">' + c + '</strong>';
+			}));
+		  }
+		});
+		
+		if(typeof(SEARCHVALUE) != 'undefined'){
+			$("#list_posts").highlight(SEARCHVALUE, 1, "hls");
+		}
+	}
+	
+	attachWholeSaleGA();
+	
+	if ( (getURLParameter('mode')!='null') && (window.location.href.toLowerCase().indexOf("business-phone-lines-hosted-pbx-promo") == -1) )
+	{
+		enableRequestACallMode();
+	}
+
+	if (typeof $.flexslider == 'function')
+	{
+		$('.flexslider').flexslider({
+			animation: "slide",
+			animationLoop: true,
+			slideshowSpeed: 7000,
+			animationSpeed: 600
+		});
+	}
+	
+	setTimeout(function(){if (window.location.href.indexOf('business-hosted-pbx-landing/?video=true')!=-1) { $('a[href="#pbxvideobig"]').click(); }},0);
+
+
+	makeTopNavAccessible();	
+	
+
+});
+
+function base64_decode (data) {
+  // From: http://phpjs.org/functions
+  // +   original by: Tyler Akins (http://rumkin.com)
+  // +   improved by: Thunder.m
+  // +      input by: Aman Gupta
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // +   bugfixed by: Pellentesque Malesuada
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +      input by: Brett Zamir (http://brett-zamir.me)
+  // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // *     example 1: base64_decode('S2V2aW4gdmFuIFpvbm5ldmVsZA==');
+  // *     returns 1: 'Kevin van Zonneveld'
+  // mozilla has this native
+  // - but breaks in 2.0.0.12!
+  //if (typeof this.window['atob'] === 'function') {
+  //    return atob(data);
+  //}
+  var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
+    ac = 0,
+    dec = "",
+    tmp_arr = [];
+
+  if (!data) {
+    return data;
+  }
+
+  data += '';
+
+  do { // unpack four hexets into three octets using index points in b64
+    h1 = b64.indexOf(data.charAt(i++));
+    h2 = b64.indexOf(data.charAt(i++));
+    h3 = b64.indexOf(data.charAt(i++));
+    h4 = b64.indexOf(data.charAt(i++));
+
+    bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
+
+    o1 = bits >> 16 & 0xff;
+    o2 = bits >> 8 & 0xff;
+    o3 = bits & 0xff;
+
+    if (h3 == 64) {
+      tmp_arr[ac++] = String.fromCharCode(o1);
+    } else if (h4 == 64) {
+      tmp_arr[ac++] = String.fromCharCode(o1, o2);
+    } else {
+      tmp_arr[ac++] = String.fromCharCode(o1, o2, o3);
+    }
+  } while (i < data.length);
+
+  dec = tmp_arr.join('');
+
+  return dec;
+}
+
+
+function attachWholeSaleGA()
+{
+	if ($('#main_content.wholesalelanding').length>0)
+	{
+		$('#content.wholesale_info a:contains("SIP Trunking?"), #content.wholesale_info a:contains("Liaison SIP")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - SIP Trunking'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - SIP Trunking']);
+		});
+		
+		$('#content.wholesale_info a:contains("LNP")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - LNP'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - LNP']);
+		});
+		
+		$('#content.wholesale_info a:contains("A-Z Termination"), #content.wholesale_info a:contains("Connexion de")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - A-Z Termination'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - A-Z Termination']);
+		});
+		
+		$('#content.wholesale_info a:contains("Toll Free"), #content.wholesale_info a:contains("sans frais")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - Toll Free'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - Toll Free']);
+		});
+		
+		$('#content.wholesale_info a:contains("DID"), #content.wholesale_info a:contains("SDA")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'wholesale - DID'], ['a2._trackEvent', 'Product Information', 'Click', 'wholesale - DID']);
+		});
+		
+		$('#content.wholesale_info a:contains("Coverage termination"), #content.wholesale_info a:contains("Fin de couverture")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Coverage Termination'],['a2._trackEvent', 'Product Information', 'Click', 'Coverage Termination']);
+		});
+		
+		$('#content.wholesale_info h3:contains("Regional-Flat rate Unlimited Local"), #content.wholesale_info h3:contains("Tarif fixe d\'appels locaux")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - SIP Regional'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - SIP Regional']);
+		});
+		
+		$('#content.wholesale_info h3:contains("National-Flat rate all of Canada"), #content.wholesale_info h3:contains("Nationale - Tarif fixe pour tout le Canada")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - SIP National'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - SIP National']);
+		});
+		
+		$('#content.wholesale_info h3:contains("USA"), #content.wholesale_info h3:contains("tats-Unis")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - SIP USA'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - SIP USA']);
+		});
+		
+		$('#content.wholesale_info h3:contains("International")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - SIP International'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - SIP International']);
+		});
+		
+		$('#content.wholesale_info h3:contains("Metered"), #content.wholesale_info h3:contains("Utilisation mesur")').click(function (){
+			_gaq.push(['_trackEvent', 'Product Information', 'Click', 'Wholesale - SIP Metered'], ['a2._trackEvent', 'Product Information', 'Click', 'Wholesale - SIP Metered']);
+		});
+	}
+}
+
+function fancyboxformstart()
+{
+	$("<style id='dynfancyrule' type='text/css'> #fancybox-outer{ background-color:white;} </style>").appendTo("head");
+}
+function fancyboxformend()
+{
+	$("#dynfancyrule").remove();
+}
+
+function enableRequestACallMode()
+{
+	$('.tab:first').hide();
+	$('li.tab_on').removeClass('tab_on');
+	$('.tabNavigation ul li a[rel=pbx_requestcall]').parent().addClass("tab_on");
+	$('.tabNavigation ul li a[rel=wh_requestcall]').parent().addClass("tab_on");
+	$('#pbx_requestcall').show();
+	$('#wh_requestcall').show();
+}
+
+function makeTopNavAccessible()
+{
+	$('#main_nav a').each(function(index){
+		$(this).attr('tabindex',index+1);
+	});
+
+	$('#main_nav a').focus(function(){
+		$(this).addClass('active focushover');
+		$(this).parent().addClass('focushover');
+		$(this).parent().parent().addClass('leftauto');
+		$(this).closest('ul.first_level').prev().addClass('active');
+	});
+
+	$('#main_nav a').focusout(function(){
+		$('#main_nav *').removeClass('leftauto focushover active');
+	});
+}

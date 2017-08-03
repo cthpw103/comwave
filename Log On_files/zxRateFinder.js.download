@@ -1,0 +1,122 @@
+
+var RateFinder;
+window.addEvent('domready',function(){
+    RateFinder = new zxRateFinder( );
+});
+
+function getrateurl()
+{
+	var rateurl="findratesphp?country=";
+	if (typeof(ephonerates) !== 'undefined' && ephonerates)
+	{
+		rateurl="findratesphp?ctype=e&country=";
+	}
+	return rateurl;
+}
+
+var zxRateFinder = new Class({
+    options : {
+        select:'rate-finder-select',
+        btnGo:'rate-finder-btn',
+        customer:'customerType',
+        rateBox:'rate-finder-box-right',
+        rateBoxWidth: 200,
+        tableId: 'rate-table',
+        extraWidth: 10,
+        btnClose:'rate-finder-closebtn',
+        content: 'rate-finder-content',
+        url: '/findrate.php?country=',
+        classClosed:'closed',
+        classOpened:'opened'
+    },
+    scroll:null,
+
+    setOptions:function(options){
+        this.options = Object.extend(this.options, options || {} );
+    },
+
+    initialize:function(options){
+        this.setOptions(options);
+        if ( !$(this.options.btnGo) || !$(this.options.content) || !$(this.options.rateBox) ) return false;
+        this.bindBtns();
+    },
+
+    bindBtns:function(){
+        if ( $(this.options.btnGo) && $(this.options.select) ){
+            $(this.options.btnGo).addEvent('click',this.sendRequest.bind(this));
+        }
+
+        if ( $(this.options.btnClose) && $(this.options.rateBox) ){
+            $(this.options.btnClose).addEvent('click',this.slideInBox.bind(this));
+        }
+    },
+
+    sendRequest:function(){
+    	this.options.url=getrateurl();
+        var country = $(this.options.select).value;
+        var customerType = $(this.options.customer).value;
+        
+        var content = $(this.options.content);
+        if ( country == 0 || country == content.getProperty('rel')) return false;
+
+        content.setProperty('rel', country);
+        
+        var aj = new Ajax(this.options.url+$(this.options.select).value+'&type='+$(this.options.customer).value, {
+            method: 'get',
+            onRequest:  this.fadeOutContent.bind(this),
+            onComplete: this.fadeInContent.bind(this)
+        }).request();
+       
+    },
+
+    fadeOutContent:function(){
+    	
+        if ( $(this.options.rateBox).hasClass(this.options.classOpened) ){
+            new Fx.Styles( $(this.options.content), { duration:500 }).start({'opacity':[1,0]});
+        }
+    },
+
+    fadeInContent:function(content){
+    	
+        $(this.options.content).setHTML(content);
+        if ( $(this.options.rateBox).hasClass(this.options.classClosed) ){
+            this.slideOutBox();
+        }else{
+            new Fx.Styles( $(this.options.content), {duration:1000}).start({'opacity':[0,1]});           
+        } 
+        this.addScrolling(  $(this.options.content) );
+    },
+
+    slideOutBox:function(){
+        var box = $(this.options.rateBox);
+        box.removeClass(this.options.classClosed);
+        new Fx.Styles(box, {
+            duration:1000,
+            onComplete: function(){ box.addClass(this.options.classOpened) }.bind(this)     
+        }).start({'opacity':[0,1]});
+    },
+
+    slideInBox:function(){
+        var box = $(this.options.rateBox);
+        box.removeClass(this.options.classOpened);
+        new Fx.Styles(box, {
+            duration:1000,
+            onComplete: function(){ box.addClass(this.options.classClosed); $(this.options.content).setProperty('rel',''); }.bind(this)
+        }).start({'opacity':[1,0]});
+    },
+    
+    addScrolling:function(div){
+    	var sizes = div.getSize();
+    	if ( sizes.size.y<sizes.scrollSize.y ){    		
+    		div.addClass('scrolling');
+    		if ( !this.scroll ){
+	    		this.scroll = new Scroller(div, {area: 30, velocity: 0.1});
+	            div.addEvent('mouseenter', this.scroll.start.bind(this.scroll));
+	            div.addEvent('mouseleave', this.scroll.stop.bind(this.scroll));
+    		}
+    	}else{
+    		div.removeClass('scrolling');
+    	}
+    }
+
+});

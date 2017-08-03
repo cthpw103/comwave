@@ -1,0 +1,66 @@
+/*
+* @author: Azim Zakhidov a.k.a. 3oxa
+* @email: azakhidov@gmail.com
+* @email: azim.zakhidov@cyberplex.com
+* @icq:   62472200
+*/
+window.addEvent('domready',function(){
+    var zxCWTabsOpt = { };
+    //var CWTabs = new zxCWTabs(zxCWTabsOpt);
+});
+
+var zxCWTabs = new Class({
+
+    toglers:[],
+    elements:[],
+
+    options : {
+        wrapper:'middle-area',
+        toglers:'#splashmenu li',
+        elements:'.splashinfoframe div',
+        display:0
+    },
+
+    setOptions:function(options){
+        this.options = Object.extend(this.options, options || {} );
+    },
+
+    initialize:function(options){
+        this.setOptions(options);
+        if (!$(this.options.wrapper)) return null;
+
+        //var wrapper = $(this.options.wrapper);
+        var toglers  = $ES(this.options.toglers,  $(this.options.wrapper));
+        var elements = $ES(this.options.elements, $(this.options.wrapper));
+
+        if (toglers.length==elements.length){
+            this.setAccordion(toglers,elements,display);
+        }
+    },
+
+    setAccordion:function(toglers, elements, display){
+        /*
+        onActive: Class.empty,
+		onBackground: Class.empty,
+        show: false - integer, the Index of the element to show at start.
+        display - integer, the Index of the element to show at start (with a transition). defaults to 0.
+        fixedHeight - integer, if you want the elements to have a fixed height. defaults to false.
+        fixedWidth - integer, if you want the elements to have a fixed width. defaults to false.
+        height - boolean, will add a height transition to the accordion if true. defaults to true.
+        opacity - boolean, will add an opacity transition to the accordion if true. defaults to true.
+        width - boolean, will add a width transition to the accordion if true. defaults to false, css mastery is required to make this work!
+        alwaysHide - boolean, will allow to hide all elements if true, instead of always keeping one element shown. defaults to false.
+        */
+
+        this.accordion = new Accordion(toglers, elements,{
+            show:display||0,
+            height:false,
+            width:false,
+            onActive:function(span){
+                //var id = span.getProperty('rel');
+                //Cookie.set(this.options.cookiename+this.type, id);
+            }.bind(this)
+        },this.menu);
+
+    }
+});

@@ -1,0 +1,733 @@
+String.prototype.trim = function() {
+	return this.replace(/^\s+|\s+$/g,"");
+}
+String.prototype.ltrim = function() {
+	return this.replace(/^\s+/,"");
+}
+String.prototype.rtrim = function() {
+	return this.replace(/\s+$/,"");
+}
+
+function autotab(original,destination)
+{
+	if (original.getAttribute&&original.value.length==original.getAttribute("maxlength"))
+	{
+		destination.focus();
+	}
+}
+
+// check for our dependencies
+if (!jQuery)
+{
+	alert ("validator.js requires jquery to be loaded, jquery was not found");
+}
+
+
+function showValidationPopup()
+{
+	jQuery("#validationpopup").fadeIn(fadeSpeed);
+	jQuery('html,body').animate({scrollTop: 0}, 400);
+}
+
+function hideValidationPopup()
+{
+	jQuery("#validationpopup").fadeOut(fadeSpeed);
+}
+
+jQuery(document).ready(function() {
+	jQuery(".pnareacode,.pnprefix").keyup(function (){
+		//autotab(this,jQuery(this).parent().next().find("input:eq(0)")[0]);
+		var nextInput = jQuery(this).next("input");
+		if (nextInput.size()==0)
+		{
+			nextInput = jQuery(this).parent().next().find("input:eq(0)");
+		}
+		autotab(this,nextInput[0]);
+	});
+	
+	jQuery('#form-button').click(function(){
+			var isValid = validate(document.getElementById("form-button"), {errorClassName:'fieldError',bValidateOnEachKeypress:true},true); // final true ==> validation is coming from submit button
+			if (!isValid)
+			{
+				if(typeof showValidationPopup == 'function')
+				{ 
+					if (jQuery.trim(jQuery ("#jserrors").html()).length>0)
+					{
+						showValidationPopup();
+					}
+				}
+			}
+			else
+			{
+				if(typeof hideValidationPopup == 'function')
+				{
+					hideValidationPopup();
+				}
+			}
+			return isValid;
+	});
+});
+
+var bJSSyntaxValidatorPresent = true;
+
+function validate(inp,options, bFromSubmitButton)
+{
+	// set default options for anything not included in the options hash
+
+	options = options || {};
+	
+	// this class name will be assigned to a form field when it fails validation and will be removed when validation succeeds
+	var errorClassName 	= typeof(options['errorClassName']) == 'undefined' ? "" : options['errorClassName'];
+	var bErrorClassName = (errorClassName.length>0);
+	
+	// set this option to true if you want validation to be performed on each key press
+	var bValidateOnEachKeypress	= typeof(options['bValidateOnEachKeypress']) == 'undefined' ? false : options['bValidateOnEachKeypress'];
+	
+	
+	// any function specified for this option will be called before any validation is done, no arguments are passed to the function
+	var bPreValidationFunctionPresent = false;
+	var preValidationFunction = null;
+	if (typeof(options['preValidationFunction']) != 'undefined')
+	{
+		bPreValidationFunctionPresent = true;
+		preValidationFunction = options['preValidationFunction'];
+	}
+	
+	// any function specified for this option will be called after all validations are complete, it will be passed a boolean which indicates
+	// weather there was any validation failures or not, this function is expected to return a boolean which will then be returned as the final
+	// result of this validate function
+	// ie use this to add any custom (most likely multifield) validation of your own
+	
+	var bPostValidationFunctionPresent = false;
+	var postValidationFunction = null;
+	if (typeof(options['postValidationFunction']) != 'undefined')
+	{
+		bPostValidationFunctionPresent = true;
+		postValidationFunction = options['postValidationFunction'];
+	}
+	
+	if (bPreValidationFunctionPresent)
+	{
+		preValidationFunction();
+	}
+	
+	
+	var bAtleastOneErrorFound=false;
+	var bFirstErrorFound=false;
+	var elmFirstErrorElement=null;
+	var bValErrorDivPresent=(jQuery("#jserrors").length>0);
+	var bValServerErrorDivPresent=(jQuery("#servererrors").length>0);
+	if (bValErrorDivPresent)
+	{
+		jQuery("#jserrors").html("");
+	}
+	if (bValServerErrorDivPresent)
+	{
+		jQuery("#servererrors").html("");
+	}
+	
+	jQuery(inp).closest("form.validate").find("input.validation:visible,select.validation:visible,textarea.validation:visible").each(function ()
+		{
+			if (bValidateOnEachKeypress && (typeof(jQuery(this)[0].isBound) == 'undefined' ))
+			{
+				jQuery(this)[0].isBound=true;
+				
+				// custom keyup for dealer portal validation
+				if (jQuery(this).hasClass("pnareacode") || jQuery(this).hasClass("pnprefix") || jQuery(this).hasClass("pnsuffix") )
+				{
+					jQuery(this).keyup(function ()
+					{
+						if (jQuery(this).val().length === jQuery(this)[0].maxLength)
+						{
+							validate (inp,options);
+						}
+					});
+				}
+				
+				// custom keyup for prepaid payment page
+				if (jQuery(this)[0].id=="amountSelected")
+				{
+					jQuery(this).keyup(function ()
+					{
+						validate (inp,options);
+					});
+				}
+				
+				//jQuery(this).keyup(function (){validate (inp,options);});
+				jQuery(this).change(function (){validate (inp,options);});
+			}
+		
+			var bRequired=jQuery(this).hasClass("required");
+			var bCustomValidator=false;
+			var customSyntaxValidatorFunctionName="";
+			var tempClassList =jQuery(this).attr('class').split(/\s+/);
+			jQuery.each(tempClassList, function(index, item)
+			{
+				if (item.toLowerCase().indexOf("syntax_validator")!=-1)
+				{
+					bCustomValidator=true;
+					customSyntaxValidatorFunctionName=item;
+				}
+			});
+			
+			var bCustomRequiredText=false;
+			var customRequiredText="";
+			var bCustomSyntaxText=false;
+			var customSyntaxText="";
+			
+			// check next two tags for custom-required-txt or custom-syntax-txt classes, if present use their innerHTML text as the error msg
+			var bReq=false;
+			var bNextTagHasCustomMsg = ( (bReq=jQuery(this).next().hasClass("custom-required-txt") )||(jQuery(this).next().hasClass("custom-syntax-txt")));
+			if (bNextTagHasCustomMsg)
+			{
+				bReq ? customRequiredText = jQuery(this).next().html() : customSyntaxText = jQuery(this).next().html();
+			}
+			bReq=false;
+			var bNextNextTagHasCustomMsg = ( (bReq=jQuery(this).next().next().hasClass("custom-required-txt") )||(jQuery(this).next().next().hasClass("custom-syntax-txt")));
+			if (bNextTagHasCustomMsg && bNextNextTagHasCustomMsg)
+			{
+				bReq ? customRequiredText = jQuery(this).next().next().html() : customSyntaxText = jQuery(this).next().next().html();
+			}
+			bCustomRequiredText = (customRequiredText.length>0);
+			bCustomSyntaxText= (customSyntaxText.length>0);
+			
+			var bBindBlur = !jQuery(this).hasClass("noblur");
+			
+			// built in validations
+			var bEmail = jQuery(this).hasClass("email");
+			var bPhoneNumber = jQuery(this).hasClass("phonenumber");
+			var bCanPostalCode = jQuery(this).hasClass("canpostalcode");
+			var bUSAZIP = jQuery(this).hasClass("usazip");
+			var bCanOrUSAZIP = jQuery(this).hasClass("canorusazip");
+			var bCcard = jQuery(this).hasClass("ccard");
+			var bCcardSecCode = jQuery(this).hasClass("ccardsec");
+			var bBankNumber = jQuery(this).hasClass("banknumber");
+			var bTransitNumber = jQuery(this).hasClass("transitnumber");
+			var bAccountNumber = jQuery(this).hasClass("accountnumber");
+			var bSIN = jQuery(this).hasClass("sin");
+			
+			var bSyntax = (bCustomValidator || bEmail || bPhoneNumber || bCanPostalCode || bUSAZIP || bCanOrUSAZIP || bCcard || bCcardSecCode || bBankNumber || bTransitNumber || bAccountNumber || bSIN);
+			
+			
+			// bind any field filters to be applied upon blur event
+			if (bPhoneNumber && bBindBlur && (typeof(jQuery(this)[0].isBlurBound) == 'undefined' ))
+			{
+				jQuery(this)[0].isBlurBound=true;
+				// remove any non numeric characters
+				jQuery(this).blur(function(){var tmpVal = jQuery(this).val(); tmpVal = tmpVal.replace(/[^0-9]+/ig,''); jQuery(this).val(tmpVal); validate (inp,options);});
+				// for the first submit run the filter
+				var tmpVal = jQuery(this).val(); tmpVal = tmpVal.replace(/[^0-9]+/ig,''); jQuery(this).val(tmpVal);
+			}
+			
+			var errStr="";
+			while (true) // we use breaks to break out of the code block once we have found a validation error
+			{
+			
+				var bIsEmpty = ( ( ( (this.nodeName.toLowerCase() === "input" && (jQuery(this).attr("type").toLowerCase() === "text" || jQuery(this).attr("type").toLowerCase() === "password") ) || this.nodeName.toLowerCase() === "textarea") && (jQuery(this).val().length===0) ) || ( (this.nodeName.toLowerCase() === "select") && (jQuery(this)[0].selectedIndex===0) ) || ( (this.nodeName.toLowerCase() === "input" && jQuery(this).attr("type").toLowerCase() === "checkbox") && (!this.checked) ) );
+				
+				if (!bIsEmpty && ( ((this.nodeName.toLowerCase() === "input" && (jQuery(this).attr("type").toLowerCase() === "text" || jQuery(this).attr("type").toLowerCase() === "password") ) || this.nodeName.toLowerCase() === "textarea") && ((!jQuery(this).hasClass("nodashorequal") && doesStringHaveNonEnglishChar(jQuery.trim(jQuery(this).val())) ) || (jQuery(this).hasClass("nodashorequal") && doesStringHaveNonEnglishCharOrBeginWithDashOrContainEqualsSign(jQuery.trim(jQuery(this).val())) )    )   ))
+				{
+					errStr = "This field contains an illegal character.";
+				}
+				
+				if (bRequired)
+				{
+					if ( ((this.nodeName.toLowerCase() === "input" && (jQuery(this).attr("type").toLowerCase() === "text" || jQuery(this).attr("type").toLowerCase() === "password") ) || this.nodeName.toLowerCase() === "textarea") && (jQuery(this).val().length===0) )
+					{
+						errStr = getRequiredButMissingErrStr();
+						break;
+					}
+					else if ( (this.nodeName.toLowerCase() === "select") && (jQuery(this)[0].selectedIndex===0) )
+					{
+						errStr = getRequiredButMissingErrStr();
+						break;
+					}
+					else if ( (this.nodeName.toLowerCase() === "input" && jQuery(this).attr("type").toLowerCase() === "checkbox") && (!this.checked) )
+					{
+						errStr = getRequiredButMissingErrStr();
+						break;
+					}
+				}
+				
+				if ( (bSyntax && !bIsEmpty) || (bSyntax && this.nodeName.toLowerCase() === "select") || (bSyntax && bCustomValidator) )
+				{
+					errStr = getSyntaxErrStr(this);
+					break;
+				}
+				
+				break;
+			}
+			if (errStr.length!=0)
+			{
+				bAtleastOneErrorFound=true;
+				if (!bFirstErrorFound)
+				{
+					bFirstErrorFound=true;
+					elmFirstErrorElement = jQuery(this)[0];
+				}
+				if (bErrorClassName) { jQuery(this).addClass(errorClassName); }
+			}
+			else
+			{
+				if (bErrorClassName) { jQuery(this).removeClass(errorClassName); }
+			}
+			
+			if (bValErrorDivPresent && (errStr.length!=0) )
+			{
+				jQuery("#jserrors").append("<li class='validation-error'>" + errStr + "</li>");
+			}
+			else
+			{
+				if (jQuery(jQuery(this).parent()).find("span:last").hasClass("validation-error"))
+				{
+					jQuery(jQuery(this).parent()).find("span:last").html(errStr);
+				}
+				else if (errStr.length!=0 && !bCustomValidator)
+				{
+					//jQuery("<span class='validation-error'>" + errStr + "</span>").insertAfter(this);
+					var elmToInsertAfter = jQuery(jQuery(this).parent()).find("span:last");
+					if (elmToInsertAfter.length === 0)
+					{
+						elmToInsertAfter = jQuery(this);
+					}
+					jQuery("<span class='validation-error'>" + errStr + "</span>").insertAfter(elmToInsertAfter);
+				}
+			}
+			
+			// helper functions
+			function getRequiredButMissingErrStr()
+			{
+				// field is empty but is required
+				if (bCustomRequiredText)
+				{
+					return customRequiredText;
+				}
+				else if (bEmail)
+				{
+					return "A valid email address is required.";
+				}
+				else if (bPhoneNumber)
+				{
+					return "A valid phone number is required.";
+				}
+				else if (bCanPostalCode)
+				{
+					return "A valid postal code is required.";
+				}
+				else if (bUSAZIP)
+				{
+					return "A valid zip code is required.";
+				}
+				else if (bCanOrUSAZIP)
+				{
+					return "Please enter a valid postal/zip code.";
+				}
+				else if (bCcard)
+				{
+					return "A valid credit card number is required.";
+				}
+				else if (bCcardSecCode)
+				{
+					return "A valid security code is required.";
+				}
+				else if (bBankNumber)
+				{
+					return "A valid bank number is required.";
+				}
+				else if (bTransitNumber)
+				{
+					return "A valid transit number is required.";
+				}
+				else if (bAccountNumber)
+				{
+					return "A valid account number is required.";
+				}
+				else if (bSIN)
+				{
+					return "A valid SIN/SSN number is required.";
+				}
+				// todo add built in required but missing error strings
+				else
+				{
+					return "This field is required.";
+				}
+				
+			}
+			
+			function getSyntaxErrStr(e)
+			{
+				var errStr="";
+				if (bCustomValidator)
+				{
+					errStr=eval(customSyntaxValidatorFunctionName)(jQuery(e)[0]);
+					// var classList =jQuery(e).attr('class').split(/\s+/);
+					// jQuery.each(classList, function(index, item)
+					// {
+						// if (item.toLowerCase().indexOf("syntax_validator")!=-1) {
+						   // errStr=eval(item)(jQuery(e)[0]);
+						// }
+					// });
+				}
+				else
+				{
+					// built in syntax validations
+					if (bEmail && !(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid email address.";
+					}
+					else if (bPhoneNumber && !(/^\d{10}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid phone number.";
+						
+					}
+					else if (bCanPostalCode && !(/^[a-z][0-9][a-z][\s]?[0-9][a-z][0-9]$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid postal code.";
+					}
+					else if (bUSAZIP && !(/^\d{5}$|^\d{5}-\d{4}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid zip code.";
+					}
+					else if (bCanOrUSAZIP && !(/^\d{5}$|^\d{5}-\d{4}|^[a-z][0-9][a-z][\s]?[0-9][a-z][0-9]$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid postal/zip code.";
+					}
+					else if (bCcard && !(/^[0-9\-]{15,16}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid credit card number.";
+					}
+					else if (bCcardSecCode && !(/^\d{3,4}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid security code.";
+					}
+					else if (bBankNumber && !(/^\d{3,4}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid bank number.";
+					}
+					else if (bTransitNumber && !(/^\d{5}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid transit number.";
+					}
+					else if (bAccountNumber && !(/^\d{1,12}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid account number.";
+					}
+					else if (bSIN && !(/^\d{9}$/i.test(jQuery(e).val())) )
+					{
+						errStr = "Please enter a valid SIN/SSN number.";
+					}
+
+					// todo add built in syntax validators
+					
+					if (bCustomSyntaxText && (errStr.length>0) )
+					{
+						errStr=customSyntaxText;
+					}
+				}
+				return errStr;
+			}
+		}
+	);
+	
+	var bResult = !bAtleastOneErrorFound;
+	if (bResult)
+	{
+		hideValidationPopup();
+	}
+	if( bResult && bFromSubmitButton)
+	{
+		if (typeof showLoaderScreen == 'function')
+		{
+			showLoaderScreen();
+		}
+	}
+	if( bResult && bFromSubmitButton && (typeof jsValidationSucceed == 'function') )
+	{
+		jsValidationSucceed();
+		if (bStopInitialSubmit)
+		{
+			bStopInitialSubmit = false;
+			return false;	
+		}
+		
+	}
+	if (bAtleastOneErrorFound && bFromSubmitButton)
+	{
+		if (typeof hideLoaderScreen == 'function')
+		{
+			hideLoaderScreen();
+		}
+		var x = jQuery(elmFirstErrorElement).offset().top - 50; // 50 provides buffer in viewport
+   		jQuery('html,body').animate({scrollTop: 0}, 400);
+   		//jQuery(elmFirstErrorElement).focus();
+   		
+   		jQuery('.waitcursor').css('cursor','default');
+
+	}
+	//if (bPostValidationFunctionPresent)
+	//{
+	//	bResult = postValidationFunction(bResult);
+	//}
+	
+	return bResult;
+}
+
+
+/*
+function custom_single_phone_number_required_syntax_validator(e)
+{
+	var result="";
+	var customErrDiv=jQuery(e).closest("li").find(".validation-error-custom");
+	var phoneNumber = jQuery(e).closest("li").find(".pnareacode").val() + jQuery(e).closest("li").find(".pnprefix").val() + jQuery(e).closest("li").find(".pnsuffix").val();
+	customErrDiv.hide();
+	if ( !(/^\d{10}$/i.test(jQuery.trim(phoneNumber))) )
+	{
+		result="error";
+		customErrDiv.text("A valid phone number is required.");
+		customErrDiv.show();
+	}
+	return result;
+}
+*/
+
+function custom_contact_phone_number_required_syntax_validator(e)
+{
+	var result="";
+	var containerspan=jQuery(e).parent().parent();
+	var phoneNumber = containerspan.find(".pnareacode").val() + containerspan.find(".pnprefix").val() + containerspan.find(".pnsuffix").val();
+	if ( !(/^\d{10}$/i.test(jQuery.trim(phoneNumber))) )
+	{
+		result="Please enter a valid phone number.";
+		containerspan.find(".pnareacode").addClass("fieldError");
+		containerspan.find(".pnprefix").addClass("fieldError");
+		containerspan.find(".pnsuffix").addClass("fieldError");
+	}
+	else
+	{
+		containerspan.find(".pnareacode").removeClass("fieldError");
+		containerspan.find(".pnprefix").removeClass("fieldError");
+		containerspan.find(".pnsuffix").removeClass("fieldError");
+	}
+	return result;
+}
+
+
+function custom_phone_number_required_syntax_validator(e)
+{
+	var result="";
+	var customErrDiv=jQuery(e).closest("li").find(".validation-error-custom");
+	var phoneNumbers=new Array();
+	var currLi=jQuery(e).closest("li");
+	var concat="";
+	for (i=0;i<=4;i++)
+	{
+		phoneNumbers[i] = currLi.find(".pnareacode").val() + currLi.find(".pnprefix").val() + currLi.find(".pnsuffix").val();
+		concat = concat + phoneNumbers[i];
+		currLi=currLi.next();
+		//alert (currLi[0].nodeName);
+	}
+	var bAllPhoneNumbersEmpty = (jQuery.trim(concat).length===0);
+
+	customErrDiv.hide();
+	if ( (jQuery.trim(phoneNumbers[0]).length!=0 && !(/^\d{10}$/i.test(jQuery.trim(phoneNumbers[0])))) || bAllPhoneNumbersEmpty )
+	{
+		result="error";
+		customErrDiv.text("Please enter a valid phone number.");
+		customErrDiv.show();
+	}
+	return result;
+}
+
+function custom_phone_number_syntax_validator(e)
+{
+	var result="";
+	var customErrDiv=jQuery(e).closest("li").find(".validation-error-custom");
+	var phoneNumber = jQuery(e).closest("li").find(".pnareacode").val() + jQuery(e).closest("li").find(".pnprefix").val() + jQuery(e).closest("li").find(".pnsuffix").val();
+	customErrDiv.hide();
+	if (jQuery.trim(phoneNumber).length===0) return result;
+	if ( !(/^\d{10}$/i.test(jQuery.trim(phoneNumber))) )
+	{
+		result="error";
+		customErrDiv.text("Please enter a valid phone number.");
+		customErrDiv.show();
+	}
+	return result;
+}
+
+/**
+ * DHTML date validation script. Courtesy of SmartWebby.com (http://www.smartwebby.com/dhtml/)
+ */
+// Declaring valid date character, minimum year and maximum year
+var dtCh= "/";
+var minYear=1800;
+var maxYear=2200;
+
+function isInteger(s){
+	var i;
+    for (i = 0; i < s.length; i++){   
+        // Check that current character is number.
+        var c = s.charAt(i);
+        if (((c < "0") || (c > "9"))) return false;
+    }
+    // All characters are numbers.
+    return true;
+}
+
+function stripCharsInBag(s, bag){
+	var i;
+    var returnString = "";
+    // Search through string's characters one by one.
+    // If character is not in bag, append to returnString.
+    for (i = 0; i < s.length; i++){   
+        var c = s.charAt(i);
+        if (bag.indexOf(c) == -1) returnString += c;
+    }
+    return returnString;
+}
+
+function daysInFebruary (year){
+	// February has 29 days in any year evenly divisible by four,
+    // EXCEPT for centurial years which are not also divisible by 400.
+    return (((year % 4 == 0) && ( (!(year % 100 == 0)) || (year % 400 == 0))) ? 29 : 28 );
+}
+function DaysArray(n) {
+	for (var i = 1; i <= n; i++) {
+		this[i] = 31
+		if (i==4 || i==6 || i==9 || i==11) {this[i] = 30}
+		if (i==2) {this[i] = 29}
+   } 
+   return this
+}
+
+function isDate(dtStr){
+	var daysInMonth = DaysArray(12)
+	var pos1=dtStr.indexOf(dtCh)
+	var pos2=dtStr.indexOf(dtCh,pos1+1)
+	var strMonth=dtStr.substring(0,pos1)
+	var strDay=dtStr.substring(pos1+1,pos2)
+	var strYear=dtStr.substring(pos2+1)
+	strYr=strYear
+	if (strDay.charAt(0)=="0" && strDay.length>1) strDay=strDay.substring(1)
+	if (strMonth.charAt(0)=="0" && strMonth.length>1) strMonth=strMonth.substring(1)
+	for (var i = 1; i <= 3; i++) {
+		if (strYr.charAt(0)=="0" && strYr.length>1) strYr=strYr.substring(1)
+	}
+	month=parseInt(strMonth)
+	day=parseInt(strDay)
+	year=parseInt(strYr)
+	if (pos1==-1 || pos2==-1){
+		//alert("The date format should be : mm/dd/yyyy")
+		return false
+	}
+	if (strMonth.length<1 || month<1 || month>12){
+		//alert("Please enter a valid month")
+		return false
+	}
+	if (strDay.length<1 || day<1 || day>31 || (month==2 && day>daysInFebruary(year)) || day > daysInMonth[month]){
+		//alert("Please enter a valid day")
+		return false
+	}
+	if (strYear.length != 4 || year==0 || year<minYear || year>maxYear){
+		//alert("Please enter a valid 4 digit year between "+minYear+" and "+maxYear)
+		return false
+	}
+	if (dtStr.indexOf(dtCh,pos2+1)!=-1 || isInteger(stripCharsInBag(dtStr, dtCh))==false){
+		//alert("Please enter a valid date")
+		return false
+	}
+return true
+}
+
+function doesStringHaveNonEnglishCharOrBeginWithDashOrContainEqualsSign(str)
+{
+	if (str.length === 0) return false;
+	if (str.charAt(0) === "-") return true;
+	for(i=0; i<str.length; i++)
+	{
+		if( (str.charCodeAt(i) > 127) || (str.charAt(i) === "=" ) )
+		{
+			return true;
+		}
+	}
+}
+
+function doesStringHaveNonEnglishChar(str)
+{
+	if (str.length === 0) return false;
+	for(i=0; i<str.length; i++)
+	{
+		if(str.charCodeAt(i) > 127)
+		{
+			return true;
+		}
+	}
+}
+
+function isFloat(val)
+{
+    if(!val || (typeof val != "string" || val.constructor != String)) {
+      return(false);
+    }
+    var isNumber = !isNaN(new Number(val));
+    if(isNumber) {
+      if(val.indexOf('.') != -1) {
+        return(true);
+      } else {
+        return(false);
+      }
+	}
+}
+
+function showLoaderScreen()
+{
+	jQuery("#LoaderDiv").show();
+   	// IE bug, gif won't animate unless line below is present
+   	setTimeout('document.images["loadergif"].src = "resources/images/loading.gif"', 200);
+       if (window.ie6){
+       	window.scrollTo(0,0);
+       }
+}
+function hideLoaderScreen()
+{
+	jQuery("#LoaderDiv").hide();
+}
+
+function custom_reenter_email_syntax_validator(e)
+{
+	var result="";
+	if (jQuery.trim(jQuery("#emailconfirm").val()).length == 0 )
+	{
+		result="Please re-enter your e-mail.";
+	}
+	else if ( jQuery("#email").val() != jQuery("#emailconfirm").val() )
+	{
+		result="The email addresses must match.";
+	}
+	return result;
+}
+
+function custom_address_syntax_validator(e)
+{
+	var result="";
+	if (  /^61 .*wildcat.*/.test(jQuery("#address1").val().toLowerCase().trim()) )
+	{
+		result="The address entered is not allowed.";
+	}
+	if (  jQuery("#address1").val().trim().length==0 )
+	{
+		result="Please enter your address.";
+	}
+	return result;
+}
+
+function custom_payamt_syntax_validator(e)
+{
+	var result="";
+	var regex = /^\d*(?:\.\d{0,2})?$/;
+	//var regex = /^\d*(?:\.\d{0,2})$/;
+	if (!regex.test(jQuery.trim(jQuery(e).val())) || (jQuery.trim(jQuery(e).val()).length===0) )
+	{
+		result="Please enter a valid amount to pay.";
+	}
+	return result;
+}
